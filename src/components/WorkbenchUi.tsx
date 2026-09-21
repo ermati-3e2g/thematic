@@ -732,7 +732,7 @@ export function SettingsModal({ settings, browserMode, onClose, onSave, onResetD
           <div className="privacy-note"><Database size={18} /><p><strong>Local by design.</strong> The desktop app stores its catalogue in SQLite beside its application data. Documents remain in their original folder; only extracted text and annotations enter the catalogue.</p></div>
         </section>
         <aside className="demo-settings about-settings">
-          <div className="eyebrow">About</div><h3>Thematic 0.10.2</h3><p>A local-first research workbench for traceable excerpts, annotations, themes, evidence synthesis, and relationships.</p>
+          <div className="eyebrow">About</div><h3>Thematic 0.10.5</h3><p>A local-first research workbench for traceable excerpts, annotations, themes, evidence synthesis, and relationships.</p>
           <dl><div><dt>Storage</dt><dd>Local SQLite catalogue</dd></div><div><dt>Documents</dt><dd>PDF and Markdown</dd></div><div><dt>Fullscreen</dt><dd>F11 · Esc to exit</dd></div></dl>
           {browserMode && <><div className="eyebrow demo-eyebrow">Browser demonstration</div><p>Changes are saved in this browser. PDF access lasts until this tab closes.</p><button className="button danger-outline" onClick={onResetDemo} type="button"><RefreshCw size={15} /> Restore sample data</button></>}
         </aside>

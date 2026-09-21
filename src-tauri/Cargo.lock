@@ -4107,7 +4107,7 @@ dependencies = [
 
 [[package]]
 name = "thematic"
-version = "0.10.2"
+version = "0.10.5"
 dependencies = [
  "base64 0.22.1",
  "chrono",

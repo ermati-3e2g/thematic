@@ -1,6 +1,6 @@
 [package]
 name = "thematic"
-version = "0.10.2"
+version = "0.10.5"
 description = "A local-first research annotation workbench"
 authors = ["Thematic"]
 edition = "2021"
