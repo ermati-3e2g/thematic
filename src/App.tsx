@@ -456,15 +456,17 @@ export default function App() {
   const captureSelection = useCallback((selection: SelectionDraft) => {
     flushPendingDraft();
     const recent = activeProjectId && settingsRef.current ? projectErgonomics(settingsRef.current, activeProjectId) : undefined;
+    // Redefining swaps only the selection area, so the note, its format, themes and colour carry over.
+    const redefined = redefiningExcerptId ? snapshot?.excerpts.find((excerpt) => excerpt.id === redefiningExcerptId) : undefined;
     const nextDraft: SelectionDraft = {
       ...selection,
       id: selection.id ?? makeId("draft"),
       documentId: selectedDocumentId,
       excerptId: redefiningExcerptId,
-      annotation: selection.annotation ?? "",
-      annotationFormat: selection.annotationFormat ?? settingsRef.current?.defaultNoteFormat ?? "plain",
-      themeIds: selection.themeIds ?? recent?.lastThemeIds ?? [],
-      color: selection.color ?? recent?.lastExcerptColor ?? settingsRef.current?.defaultExcerptColor,
+      annotation: selection.annotation ?? redefined?.annotation ?? "",
+      annotationFormat: selection.annotationFormat ?? redefined?.annotationFormat ?? settingsRef.current?.defaultNoteFormat ?? "plain",
+      themeIds: selection.themeIds ?? redefined?.themeIds ?? recent?.lastThemeIds ?? [],
+      color: selection.color ?? redefined?.color ?? recent?.lastExcerptColor ?? settingsRef.current?.defaultExcerptColor,
       updatedAt: new Date().toISOString(),
     };
     draftRef.current = nextDraft;
@@ -473,7 +475,7 @@ export default function App() {
     if (!redefiningExcerptId) setSelectedExcerptId(undefined);
     setMobilePane("notes");
     notify("info", redefiningExcerptId ? "Excerpt area replaced" : selection.kind === "image" ? "Image region captured" : "Passage captured", redefiningExcerptId ? "Review the new area, then save the changes." : "Add a note or themes, then save the excerpt.");
-  }, [activeProjectId, notify, redefiningExcerptId, selectedDocumentId]);
+  }, [activeProjectId, notify, redefiningExcerptId, selectedDocumentId, snapshot]);
 
   const updateOpenDraft = useCallback((patch: Pick<SelectionDraft, "annotation" | "annotationFormat" | "themeIds" | "color">) => {
     if (!draftRef.current) return;
