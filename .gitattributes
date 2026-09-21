@@ -1,0 +1,10 @@
+# Keep the repo's existing LF line endings stable on Windows checkouts
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.ico binary
+*.icns binary
+*.zip binary
+*.exe binary
+*.thematic binary

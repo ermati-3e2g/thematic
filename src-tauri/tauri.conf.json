@@ -1,0 +1,39 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Thematic",
+  "version": "0.10.2",
+  "identifier": "app.thematic.research",
+  "build": {
+    "beforeDevCommand": "node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 1420",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "node node_modules/typescript/bin/tsc && node node_modules/vite/bin/vite.js build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Thematic — Research Workbench",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 680,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "fileAssociations": [{ "ext": ["thematic"], "name": "Thematic project", "description": "Portable Thematic research project", "role": "Editor" }],
+    "shortDescription": "Local-first research annotation workbench",
+    "longDescription": "Read PDF and Markdown research documents, capture annotated excerpts, organize themes, synthesize evidence, and export portable research projects.",
+    "windows": {
+      "wix": null,
+      "nsis": null
+    }
+  }
+}

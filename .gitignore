@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.vite/
+src-tauri/target/
+.sites-runtime/
+*.log
+.DS_Store
+
+# Build caches and generated output
+*.tsbuildinfo
+.pnpm-store/
+.cargo-target-check/
+.verification-target/
+src-tauri/.cargo-check-target/
+src-tauri/gen/schemas/
+release/
+tmp/
+output/
