@@ -5230,6 +5230,55 @@ fn export_library(
     })
 }
 
+fn safe_html_file_name(value: &str) -> String {
+    let leaf = Path::new(value)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("");
+    let stem = leaf
+        .strip_suffix(".html")
+        .or_else(|| leaf.strip_suffix(".htm"))
+        .unwrap_or(leaf);
+    let mut cleaned = String::new();
+    let mut previous_dash = false;
+    for character in stem.chars() {
+        if character.is_alphanumeric() || matches!(character, '_' | '-') {
+            cleaned.push(character);
+            previous_dash = false;
+        } else if !previous_dash && !cleaned.is_empty() {
+            cleaned.push('-');
+            previous_dash = true;
+        }
+    }
+    let cleaned = cleaned.trim_matches('-');
+    if cleaned.is_empty() {
+        "thematic-synthesis-report.html".to_owned()
+    } else {
+        format!("{cleaned}.html")
+    }
+}
+
+#[tauri::command]
+fn save_report_html(html: String, file_name: String) -> Result<Option<String>, String> {
+    if html.trim().is_empty() {
+        return Err("The report is empty, so nothing was saved.".to_owned());
+    }
+    let suggested = safe_html_file_name(&file_name);
+    let Some(mut path) = rfd::FileDialog::new()
+        .set_title("Save Thematic synthesis report")
+        .set_file_name(&suggested)
+        .add_filter("HTML document", &["html"])
+        .save_file()
+    else {
+        return Ok(None);
+    };
+    if path.extension().is_none() {
+        path.set_extension("html");
+    }
+    std::fs::write(&path, html.as_bytes()).map_err(app_error)?;
+    Ok(Some(path.to_string_lossy().into_owned()))
+}
+
 #[tauri::command]
 fn save_project_state(state: State<'_, AppState>, project_id: String) -> Result<String, String> {
     let connection = connection_for(&state)?;
@@ -5290,6 +5339,7 @@ pub fn run() {
             delete_relationship,
             save_project_state,
             export_library,
+            save_report_html,
             import_project_bundle,
             preview_project_bundle,
             import_project_bundle_from_path,
@@ -5308,6 +5358,20 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn report_html_file_names_are_safe_and_slugged() {
+        assert_eq!(
+            safe_html_file_name("Nature in Everyday Life: What Helps?"),
+            "Nature-in-Everyday-Life-What-Helps.html"
+        );
+        assert_eq!(safe_html_file_name("../../etc/passwd"), "passwd.html");
+        assert_eq!(safe_html_file_name("report.html"), "report.html");
+        assert_eq!(
+            safe_html_file_name("   "),
+            "thematic-synthesis-report.html"
+        );
+    }
 
     #[test]
     fn llama_arguments_keep_quoted_values_and_protect_managed_flags() {

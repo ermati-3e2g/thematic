@@ -45,6 +45,7 @@ import { defaultErgonomicsProject, normalizeErgonomics, projectErgonomics } from
 import { organizeImportedDirectories } from "./libraryDirectories";
 import type {
   AiSettings,
+  AtlasDrafts,
   DocumentPayload,
   Excerpt,
   ExportFormat,
@@ -58,6 +59,7 @@ import type {
   RecoveryCheckpoint,
   ResearchDocument,
   SelectionDraft,
+  SynthesisDrafts,
   SynthesisWorkspaceState,
   Theme,
   ToastMessage,
@@ -122,6 +124,7 @@ export default function App() {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>();
   const [selectedExcerptId, setSelectedExcerptId] = useState<string>();
   const [locatedExcerptId, setLocatedExcerptId] = useState<string>();
+  const [atlasFocusThemeId, setAtlasFocusThemeId] = useState<string>();
   const [locateRequest, setLocateRequest] = useState(0);
   const [draft, setDraft] = useState<SelectionDraft>();
   const draftRef = useRef<SelectionDraft | undefined>(undefined);
@@ -321,6 +324,42 @@ export default function App() {
     }
   }, [notify, updateSnapshot]);
 
+  const persistSynthesisDrafts = useCallback((patch: Partial<SynthesisDrafts>) => {
+    if (!activeProjectId) return;
+    const current = settingsRef.current;
+    if (!current) return;
+    const existing = current.synthesisWorkspaces?.[activeProjectId] ?? defaultSynthesisWorkspace();
+    persistSynthesisWorkspace(activeProjectId, { drafts: { ...(existing.drafts ?? {}), ...patch } });
+  }, [activeProjectId, persistSynthesisWorkspace]);
+
+  const clearSynthesisDraft = useCallback((key: keyof SynthesisDrafts) => {
+    if (!activeProjectId) return;
+    const current = settingsRef.current;
+    if (!current) return;
+    const existing = current.synthesisWorkspaces?.[activeProjectId] ?? defaultSynthesisWorkspace();
+    const drafts = { ...(existing.drafts ?? {}) };
+    delete drafts[key];
+    persistSynthesisWorkspace(activeProjectId, { drafts });
+  }, [activeProjectId, persistSynthesisWorkspace]);
+
+  const persistAtlasDrafts = useCallback((patch: Partial<AtlasDrafts>) => {
+    if (!activeProjectId) return;
+    const current = settingsRef.current;
+    if (!current) return;
+    const existing = current.graphWorkspaces?.[activeProjectId] ?? defaultGraphWorkspace(current);
+    persistGraphWorkspace(activeProjectId, { drafts: { ...(existing.drafts ?? {}), ...patch } });
+  }, [activeProjectId, persistGraphWorkspace]);
+
+  const clearAtlasDraft = useCallback((key: keyof AtlasDrafts) => {
+    if (!activeProjectId) return;
+    const current = settingsRef.current;
+    if (!current) return;
+    const existing = current.graphWorkspaces?.[activeProjectId] ?? defaultGraphWorkspace(current);
+    const drafts = { ...(existing.drafts ?? {}) };
+    delete drafts[key];
+    persistGraphWorkspace(activeProjectId, { drafts });
+  }, [activeProjectId, persistGraphWorkspace]);
+
   const selectedDocument = snapshot?.documents.find((doc) => doc.id === selectedDocumentId);
   const activeProject = snapshot?.projects.find((project) => project.id === activeProjectId);
   const projectDocuments = useMemo(
@@ -335,6 +374,14 @@ export default function App() {
     const ids = new Set(projectDocuments.map((document) => document.id));
     return snapshot?.excerpts.filter((excerpt) => ids.has(excerpt.documentId)) ?? [];
   }, [snapshot?.excerpts, projectDocuments]);
+  const projectRelationships = useMemo(
+    () => snapshot?.relationships.filter((relationship) => relationship.projectId === activeProjectId) ?? [],
+    [snapshot?.relationships, activeProjectId],
+  );
+
+  useEffect(() => {
+    if (view !== "themes") setAtlasFocusThemeId(undefined);
+  }, [view]);
   const ergonomicsSettings = snapshot ? normalizeErgonomics(snapshot.settings) : undefined;
   const activeErgonomics = snapshot && activeProjectId ? projectErgonomics(snapshot.settings, activeProjectId) : defaultErgonomicsProject();
 
@@ -1165,6 +1212,26 @@ export default function App() {
     }
   }
 
+  async function saveReportHtml(html: string, suggestedName: string) {
+    try {
+      if (backend.desktop) {
+        const path = await backend.saveReportHtml(html, suggestedName);
+        if (!path) return;
+        notify("success", "HTML report saved", path);
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${suggestedName}.html`;
+      link.click();
+      URL.revokeObjectURL(url);
+      notify("success", "HTML report prepared", "The browser build downloads the report to your downloads folder.");
+    } catch (error) {
+      notify("error", "Could not save the HTML report", error instanceof Error ? error.message : undefined);
+    }
+  }
+
   async function saveProjectNow(checkpointLabel = "Manual save") {
     if (!snapshot || !activeProjectId) return;
     setProjectSaving(true);
@@ -1237,6 +1304,14 @@ export default function App() {
     setDraft(undefined);
     setView("reader");
     setMobilePane("document");
+  }
+
+  function openThemeInAtlas(themeId: string) {
+    const theme = snapshot?.themes.find((item) => item.id === themeId);
+    if (!theme) return;
+    setActiveProjectId(theme.projectId);
+    setAtlasFocusThemeId(themeId);
+    setView("themes");
   }
 
   function openPendingDraft(pending: PendingExcerptDraft) {
@@ -1462,9 +1537,9 @@ export default function App() {
           ) : <EmptyNotesPanel />}
         </main>
       ) : view === "themes" ? (
-        <ThemesWorkspace documents={snapshot.documents} excerpts={snapshot.excerpts} initialExcerptId={selectedExcerptId} initialProjectId={activeProjectId} onCreateTheme={(theme) => void createTheme(theme)} onDeleteRelationship={(relationship) => void deleteRelationship(relationship)} onDeleteTheme={(id) => void deleteTheme(id)} onOpenInReader={openExcerptInReader} onPersistGraphWorkspace={persistGraphWorkspace} onUpdateRelationship={upsertRelationship} onUpdateTheme={updateTheme} projects={snapshot.projects} relationships={snapshot.relationships} settings={snapshot.settings} themes={snapshot.themes} />
+        <ThemesWorkspace documents={snapshot.documents} excerpts={snapshot.excerpts} initialExcerptId={selectedExcerptId} initialProjectId={activeProjectId} drafts={snapshot.settings.graphWorkspaces?.[activeProjectId ?? ""]?.drafts} initialThemeId={atlasFocusThemeId} onCreateTheme={(theme) => void createTheme(theme)} onDeleteRelationship={(relationship) => void deleteRelationship(relationship)} onDeleteTheme={(id) => void deleteTheme(id)} onOpenInReader={openExcerptInReader} onClearDraft={clearAtlasDraft} onPersistDrafts={persistAtlasDrafts} onPersistGraphWorkspace={persistGraphWorkspace} onUpdateRelationship={upsertRelationship} onUpdateTheme={updateTheme} projects={snapshot.projects} relationships={snapshot.relationships} settings={snapshot.settings} themes={snapshot.themes} />
       ) : (
-        <SynthesisWorkspace attentionTarget={attentionTarget} documents={projectDocuments} excerpts={projectExcerpts} initialTab={snapshot.settings.synthesisTabs?.[project?.id ?? ""] ?? "protocol"} onChange={(patch) => project && persistSynthesisWorkspace(project.id, patch)} onOpenDocument={openDocumentInReader} onOpenExcerpt={openExcerptInReader} onTabChange={(tab) => project && saveInterfaceSetting({ synthesisTabs: { ...(settingsRef.current?.synthesisTabs ?? {}), [project.id]: tab } })} project={project} themes={projectThemes} workspace={synthesisWorkspace} />
+        <SynthesisWorkspace attentionTarget={attentionTarget} documents={projectDocuments} excerpts={projectExcerpts} initialTab={snapshot.settings.synthesisTabs?.[project?.id ?? ""] ?? "protocol"} drafts={synthesisWorkspace.drafts} onChange={(patch) => project && persistSynthesisWorkspace(project.id, patch)} onClearDraft={clearSynthesisDraft} onOpenDocument={openDocumentInReader} onOpenExcerpt={openExcerptInReader} onOpenThemeInAtlas={openThemeInAtlas} onPersistDrafts={persistSynthesisDrafts} onSaveReportHtml={saveReportHtml} onTabChange={(tab) => project && saveInterfaceSetting({ synthesisTabs: { ...(settingsRef.current?.synthesisTabs ?? {}), [project.id]: tab } })} project={project} relationships={projectRelationships} themes={projectThemes} workspace={synthesisWorkspace} />
       )}
 
       <input

@@ -130,6 +130,31 @@ export interface GraphWorkspaceState {
   themeShape?: GraphNodeShape;
   excerptShape?: GraphNodeShape;
   layoutSettings?: GraphLayoutSettings;
+  drafts?: AtlasDrafts;
+}
+
+export interface PendingThemeEditor {
+  draft: { name: string; description: string; color: string; parentId: string; parentLabel: string; projectId: string };
+  editingThemeId?: string;
+  updatedAt: string;
+}
+
+export interface PendingRelationshipEditor {
+  draft: {
+    source?: { kind: "theme" | "excerpt"; id: string };
+    target?: { kind: "theme" | "excerpt"; id: string };
+    existing?: GraphRelationship;
+    label: string;
+    themeMode?: "parent" | "peer";
+    color?: string;
+    lineStyle?: RelationshipLineStyle;
+  };
+  updatedAt: string;
+}
+
+export interface AtlasDrafts {
+  theme?: PendingThemeEditor;
+  relationship?: PendingRelationshipEditor;
 }
 
 export type GraphNodeShape = "circle" | "square" | "diamond" | "hexagon";
@@ -227,6 +252,13 @@ export interface SynthesisWorkspaceState {
   claims: ResearchClaim[];
   sections: SynthesisSection[];
   savedViews: SavedResearchView[];
+  drafts?: SynthesisDrafts;
+}
+
+export interface SynthesisDrafts {
+  claim?: { claim: ResearchClaim; updatedAt: string };
+  sectionTitle?: { title: string; updatedAt: string };
+  extractionField?: { name: string; type: ExtractionFieldType; options: string; updatedAt: string };
 }
 
 export interface AiSettings {

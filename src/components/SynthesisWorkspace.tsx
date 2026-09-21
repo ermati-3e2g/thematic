@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
   type DragEvent as ReactDragEvent,
@@ -18,6 +19,7 @@ import {
   ChevronRight,
   Clipboard,
   Eye,
+  FileCode2,
   FileDown,
   FileQuestion,
   Filter,
@@ -39,15 +41,18 @@ import type {
   Excerpt,
   ExtractionCell,
   ExtractionFieldType,
+  GraphRelationship,
   ResearchClaim,
   ResearchDocument,
   ResearchProject,
   ReviewStatus,
+  SynthesisDrafts,
   SynthesisSection,
   SynthesisWorkspaceState,
   Theme,
 } from "../types";
 import MarkdownNote from "./MarkdownNote";
+import { useDraftSaver } from "../lib/draftSaver";
 
 type Tab =
   | "protocol"
@@ -98,6 +103,87 @@ const roleColors: Record<EvidenceRole, string> = {
   defines: "#5b647d",
   method: "#65736d",
 };
+function descendantThemeIds(themes: Theme[], themeId: string): string[] {
+  const children = new Map<string, string[]>();
+  themes.forEach((theme) => {
+    if (!theme.parentId) return;
+    children.set(theme.parentId, [...(children.get(theme.parentId) ?? []), theme.id]);
+  });
+  const found: string[] = [];
+  const seen = new Set<string>([themeId]);
+  const queue = [themeId];
+  while (queue.length) {
+    const current = queue.shift() as string;
+    for (const childId of children.get(current) ?? []) {
+      if (seen.has(childId)) continue;
+      seen.add(childId);
+      found.push(childId);
+      queue.push(childId);
+    }
+  }
+  return found;
+}
+
+function expandThemeIds(themes: Theme[], themeIds: string[]): string[] {
+  const expanded = new Set<string>();
+  themeIds.forEach((themeId) => {
+    expanded.add(themeId);
+    descendantThemeIds(themes, themeId).forEach((childId) => expanded.add(childId));
+  });
+  return [...expanded];
+}
+
+function themePath(theme: Theme, themes: Theme[]): string {
+  const byId = new Map(themes.map((item) => [item.id, item]));
+  const path = [theme.name];
+  const seen = new Set<string>([theme.id]);
+  let parentId = theme.parentId;
+  while (parentId) {
+    const parent = byId.get(parentId);
+    if (!parent || seen.has(parent.id)) break;
+    seen.add(parent.id);
+    path.unshift(parent.name);
+    parentId = parent.parentId;
+  }
+  return path.join(" › ");
+}
+
+type RelatedTheme = { theme: Theme; reason: string; viaThemeId: string };
+function relatedThemesFor(themeIds: string[], themes: Theme[], relationships: GraphRelationship[]): RelatedTheme[] {
+  const tagged = new Set(themeIds);
+  const found = new Map<string, RelatedTheme>();
+  relationships.forEach((relationship) => {
+    if (relationship.kind !== "theme-peer") return;
+    const pairs: [string, string][] = [];
+    if (tagged.has(relationship.sourceId) && !tagged.has(relationship.targetId)) pairs.push([relationship.sourceId, relationship.targetId]);
+    if (tagged.has(relationship.targetId) && !tagged.has(relationship.sourceId)) pairs.push([relationship.targetId, relationship.sourceId]);
+    pairs.forEach(([viaThemeId, otherId]) => {
+      if (found.has(otherId)) return;
+      const theme = themes.find((item) => item.id === otherId);
+      if (theme) found.set(otherId, { theme, reason: relationship.label, viaThemeId });
+    });
+  });
+  return [...found.values()];
+}
+
+type RelatedExcerpt = { excerpt: Excerpt; reason: string; viaExcerptId: string };
+function relatedExcerptsFor(evidenceIds: string[], excerpts: Excerpt[], relationships: GraphRelationship[]): RelatedExcerpt[] {
+  const linked = new Set(evidenceIds);
+  const found = new Map<string, RelatedExcerpt>();
+  relationships.forEach((relationship) => {
+    if (relationship.kind !== "excerpt-excerpt") return;
+    const pairs: [string, string][] = [];
+    if (linked.has(relationship.sourceId) && !linked.has(relationship.targetId)) pairs.push([relationship.sourceId, relationship.targetId]);
+    if (linked.has(relationship.targetId) && !linked.has(relationship.sourceId)) pairs.push([relationship.targetId, relationship.sourceId]);
+    pairs.forEach(([viaExcerptId, otherId]) => {
+      if (found.has(otherId)) return;
+      const excerpt = excerpts.find((item) => item.id === otherId);
+      if (excerpt) found.set(otherId, { excerpt, reason: relationship.label, viaExcerptId });
+    });
+  });
+  return [...found.values()];
+}
+
 const statusOrder: ReviewStatus[] = [
   "inbox",
   "to-read",
@@ -111,6 +197,179 @@ const id = (prefix: string) =>
 const short = (value: string, max = 90) =>
   value.length <= max ? value : `${value.slice(0, max - 1).trim()}…`;
 
+function slugifyHeading(value: string, used: Set<string>): string {
+  const base = value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 72) || "section";
+  let slug = base;
+  let index = 2;
+  while (used.has(slug)) { slug = `${base}-${index}`; index += 1; }
+  used.add(slug);
+  return slug;
+}
+
+function escapeHtmlText(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function evidenceGroupSummary(host: Element): string {
+  const roles = new Map<string, number>();
+  host.querySelectorAll(":scope > .claim-evidence-detail > header > em").forEach((node) => {
+    const label = node.textContent?.trim() || "Evidence";
+    roles.set(label, (roles.get(label) ?? 0) + 1);
+  });
+  const total = [...roles.values()].reduce((sum, count) => sum + count, 0);
+  const detail = [...roles.entries()].map(([label, count]) => `${label} ${count}`).join(" · ");
+  return `${total} evidence ${total === 1 ? "excerpt" : "excerpts"}${detail ? ` — ${detail}` : ""}`;
+}
+
+function toBase64Data(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let index = 0; index < bytes.length; index += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+  }
+  return btoa(binary);
+}
+
+async function inlineFontFace(text: string, base: string): Promise<string> {
+  const urls = [...text.matchAll(/url\((['"]?)([^'")]+)\1\)/g)].map((match) => match[2]).filter((value) => /\.(woff2|woff)(\?|#|$)/i.test(value));
+  if (!urls.length) return text;
+  const preferred = urls.find((value) => /\.woff2(\?|#|$)/i.test(value)) ?? urls[0];
+  try {
+    const response = await fetch(new URL(preferred, base).toString());
+    if (!response.ok) return text;
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > 600_000) return text;
+    const type = /\.woff2(\?|#|$)/i.test(preferred) ? "font/woff2" : "font/woff";
+    const dataUri = `url("data:${type};base64,${toBase64Data(buffer)}")`;
+    return text.replace(/src\s*:\s*[^;}]+/i, `src: ${dataUri}`);
+  } catch {
+    return text;
+  }
+}
+
+async function inlineStylesheetText(): Promise<string> {
+  const chunks: string[] = [];
+  for (const sheet of Array.from(document.styleSheets)) {
+    let rules: CSSRule[] = [];
+    try { rules = Array.from(sheet.cssRules); } catch { continue; }
+    for (const rule of rules) {
+      if (rule instanceof CSSFontFaceRule) { chunks.push(await inlineFontFace(rule.cssText, sheet.href ?? document.baseURI)); continue; }
+      chunks.push(rule.cssText);
+    }
+  }
+  return chunks.join("\n");
+}
+
+const reportExportCss = [
+  ".report-export-body { margin: 0; overflow: auto; background: #fff; }",
+  ".report-export-backdrop { position: static; inset: auto; padding: 0; background: none; }",
+  ".report-export-backdrop .synthesis-report-modal { border: 0; box-shadow: none; background: #fff; }",
+  ".report-toc { margin: 22px 0 30px; padding: 16px 20px; background: #f7f2e5; border: 1px solid #c6b894; }",
+  ".report-toc h2 { margin: 0 0 10px; padding: 0; border: 0; font-size: calc(14px * var(--ui-font-scale)); }",
+  ".report-toc ol { margin: 0; padding-left: 20px; }",
+  ".report-toc ul { margin: 5px 0 9px; padding-left: 18px; list-style: none; }",
+  ".report-toc li { margin: 3px 0; }",
+  ".report-toc a { color: inherit; text-decoration: none; }",
+  ".report-toc a:hover, .report-toc a:focus { text-decoration: underline; }",
+  ".report-toc ul a { color: #5c5442; font-size: calc(10px * var(--ui-font-scale)); }",
+  ".report-evidence-group { margin: 12px 0; background: #fdfaf1; border: 1px solid #c6b894; }",
+  ".report-evidence-group > summary { padding: 7px 10px; cursor: pointer; color: #4c4334; font: 600 calc(9px * var(--ui-font-scale)) var(--mono); letter-spacing: .04em; text-transform: uppercase; }",
+  ".report-evidence-group[open] > summary { border-bottom: 1px solid #c6b894; }",
+  ".report-evidence-group .claim-evidence-detail { margin: 10px; }",
+  "@media print { .report-toc { break-after: page; page-break-after: always; } .report-evidence-group { break-inside: auto; } }",
+].join("\n");
+
+async function buildReportHtml(report: HTMLElement, title: string): Promise<string> {
+  const clone = report.cloneNode(true) as HTMLElement;
+  const used = new Set<string>();
+  const toc: Array<{ id: string; label: string; children: Array<{ id: string; label: string }> }> = [];
+  clone.querySelectorAll(":scope > section").forEach((section) => {
+    const heading = section.querySelector(":scope > h2");
+    const label = heading?.textContent?.trim() || "Section";
+    const id = slugifyHeading(label, used);
+    section.id = id;
+    const children: Array<{ id: string; label: string }> = [];
+    section.querySelectorAll(":scope h3").forEach((child) => {
+      const childLabel = child.textContent?.trim() || "Entry";
+      const target = child.closest("article") ?? child;
+      if (!target.id) target.id = slugifyHeading(childLabel, used);
+      children.push({ id: target.id, label: childLabel });
+    });
+    toc.push({ id, label, children });
+  });
+  clone.querySelectorAll(":scope > section > .report-claim").forEach((claim) => {
+    const evidence = [...claim.querySelectorAll(":scope > .claim-evidence-detail")];
+    if (!evidence.length) return;
+    const details = document.createElement("details");
+    details.className = "report-evidence-group";
+    const summary = document.createElement("summary");
+    summary.textContent = evidenceGroupSummary(claim);
+    details.appendChild(summary);
+    evidence[0].before(details);
+    evidence.forEach((node) => details.appendChild(node));
+  });
+  clone.querySelectorAll(":scope .report-section > .report-sources").forEach((sources) => {
+    const count = sources.querySelectorAll(".claim-evidence-detail").length;
+    const details = document.createElement("details");
+    details.className = "report-evidence-group";
+    const summary = document.createElement("summary");
+    summary.textContent = `${count} linked source ${count === 1 ? "excerpt" : "excerpts"}`;
+    details.appendChild(summary);
+    sources.before(details);
+    details.appendChild(sources);
+  });
+  if (toc.length) {
+    const nav = document.createElement("nav");
+    nav.className = "report-toc";
+    const heading = document.createElement("h2");
+    heading.textContent = "Contents";
+    nav.appendChild(heading);
+    const list = document.createElement("ol");
+    toc.forEach((item) => {
+      const entry = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = `#${item.id}`;
+      link.textContent = item.label;
+      entry.appendChild(link);
+      if (item.children.length) {
+        const sublist = document.createElement("ul");
+        item.children.forEach((child) => {
+          const childEntry = document.createElement("li");
+          const childLink = document.createElement("a");
+          childLink.href = `#${child.id}`;
+          childLink.textContent = short(child.label, 92);
+          childEntry.appendChild(childLink);
+          sublist.appendChild(childEntry);
+        });
+        entry.appendChild(sublist);
+      }
+      list.appendChild(entry);
+    });
+    nav.appendChild(list);
+    const cover = clone.querySelector(":scope > .report-cover");
+    if (cover) cover.after(nav); else clone.prepend(nav);
+  }
+  const css = [await inlineStylesheetText(), reportExportCss].join("\n");
+  return [
+    "<!doctype html>",
+    '<html lang="en">',
+    "<head>",
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    `<title>${escapeHtmlText(title)} — evidence synthesis</title>`,
+    `<style>${css}</style>`,
+    "</head>",
+    '<body class="report-export-body">',
+    '<div class="report-backdrop report-export-backdrop">',
+    '<section class="synthesis-report-modal">',
+    clone.outerHTML,
+    "</section>",
+    "</div>",
+    "<script>window.addEventListener('beforeprint',function(){document.querySelectorAll('details').forEach(function(node){node.open=true;});});</script>",
+    "</body>",
+    "</html>",
+  ].join("\n");
+}
 function emptyClaim(): ResearchClaim {
   const now = new Date().toISOString();
   return {
@@ -223,7 +482,7 @@ function SourceCard({
   );
 }
 
-function ThemeBadges({ ids, themes }: { ids: string[]; themes: Theme[] }) {
+function ThemeBadges({ ids, themes, paths = false }: { ids: string[]; themes: Theme[]; paths?: boolean }) {
   return (
     <span className="evidence-theme-badges">
       {ids.map((themeId) => {
@@ -231,12 +490,13 @@ function ThemeBadges({ ids, themes }: { ids: string[]; themes: Theme[] }) {
         return (
           <span
             key={themeId}
+            title={paths && theme?.parentLabel ? theme.parentLabel : undefined}
             style={
               { "--theme-color": theme?.color ?? "#8b8068" } as CSSProperties
             }
           >
             <i />
-            {theme?.name ?? "Missing theme"}
+            {theme ? (paths ? themePath(theme, themes) : theme.name) : "Missing theme"}
           </span>
         );
       })}
@@ -395,6 +655,12 @@ export default function SynthesisWorkspace({
   onChange,
   onOpenDocument,
   onOpenExcerpt,
+  onOpenThemeInAtlas,
+  onSaveReportHtml,
+  onPersistDrafts,
+  onClearDraft,
+  drafts,
+  relationships,
   initialTab = "protocol",
   onTabChange,
   attentionTarget,
@@ -407,6 +673,12 @@ export default function SynthesisWorkspace({
   onChange: (patch: Partial<SynthesisWorkspaceState>) => void;
   onOpenDocument: (id: string) => void;
   onOpenExcerpt: (id: string) => void;
+  onOpenThemeInAtlas: (themeId: string) => void;
+  onSaveReportHtml: (html: string, suggestedName: string) => Promise<void> | void;
+  onPersistDrafts: (patch: Partial<SynthesisDrafts>) => void;
+  onClearDraft: (key: keyof SynthesisDrafts) => void;
+  drafts?: SynthesisDrafts;
+  relationships: GraphRelationship[];
   initialTab?: Tab;
   onTabChange?: (tab: Tab) => void;
   attentionTarget?: { kind: "screening" | "claim"; id: string; request: number };
@@ -418,18 +690,18 @@ export default function SynthesisWorkspace({
   const [sort, setSort] = useState<ReviewSort>("title");
   const [viewName, setViewName] = useState("");
   const [notePreviews, setNotePreviews] = useState<string[]>([]);
-  const [fieldName, setFieldName] = useState("");
-  const [fieldType, setFieldType] = useState<ExtractionFieldType>("text");
-  const [fieldOptions, setFieldOptions] = useState("");
+  const [fieldName, setFieldName] = useState(() => drafts?.extractionField?.name ?? "");
+  const [fieldType, setFieldType] = useState<ExtractionFieldType>(() => drafts?.extractionField?.type ?? "text");
+  const [fieldOptions, setFieldOptions] = useState(() => drafts?.extractionField?.options ?? "");
   const [extractionDocId, setExtractionDocId] = useState("");
   const [extractionThemes, setExtractionThemes] = useState<string[]>([]);
   const [cellPreviews, setCellPreviews] = useState<string[]>([]);
-  const [claimDraft, setClaimDraft] = useState<ResearchClaim>();
+  const [claimDraft, setClaimDraft] = useState<ResearchClaim | undefined>(() => drafts?.claim?.claim);
   const [evidenceRole, setEvidenceRole] = useState<EvidenceRole>("supports");
   const [evidenceQuery, setEvidenceQuery] = useState("");
   const [claimEvidenceDetailed, setClaimEvidenceDetailed] = useState(false);
   const [detailedClaimId, setDetailedClaimId] = useState("");
-  const [sectionTitle, setSectionTitle] = useState("");
+  const [sectionTitle, setSectionTitle] = useState(() => drafts?.sectionTitle?.title ?? "");
   const [activeSectionId, setActiveSectionId] = useState("");
   const [draggedSectionId, setDraggedSectionId] = useState<string>();
   const [sectionPreviews, setSectionPreviews] = useState<string[]>([]);
@@ -441,6 +713,29 @@ export default function SynthesisWorkspace({
   const [reportOpen, setReportOpen] = useState(false);
   const [selectedScreeningIds, setSelectedScreeningIds] = useState<string[]>([]);
   const [reviewUndo, setReviewUndo] = useState<DocumentReviewRecord[]>();
+  const [restoredDrafts, setRestoredDrafts] = useState<{ claim?: string; sectionTitle?: string; extractionField?: string }>(() => ({
+    claim: drafts?.claim?.updatedAt,
+    sectionTitle: drafts?.sectionTitle?.updatedAt,
+    extractionField: drafts?.extractionField?.updatedAt,
+  }));
+
+  useDraftSaver(claimDraft, 700, (value) => onPersistDrafts({ claim: { claim: value, updatedAt: new Date().toISOString() } }));
+  useDraftSaver(
+    fieldName.trim() || fieldOptions.trim() ? { name: fieldName, type: fieldType, options: fieldOptions } : undefined,
+    700,
+    (value) => onPersistDrafts({ extractionField: { ...value, updatedAt: new Date().toISOString() } }),
+  );
+  useDraftSaver(
+    sectionTitle.trim() ? { title: sectionTitle } : undefined,
+    700,
+    (value) => onPersistDrafts({ sectionTitle: { ...value, updatedAt: new Date().toISOString() } }),
+  );
+
+  function closeClaimDraft() {
+    setClaimDraft(undefined);
+    setRestoredDrafts((current) => ({ ...current, claim: undefined }));
+    onClearDraft("claim");
+  }
   useEffect(() => { if (workspace.sections.length && !workspace.sections.some((section) => section.id === activeSectionId)) setActiveSectionId(workspace.sections[0].id); }, [activeSectionId, workspace.sections]);
   useEffect(() => { if (workspace.claims.length && !workspace.claims.some((claim) => claim.id === detailedClaimId)) setDetailedClaimId(workspace.claims[0].id); }, [detailedClaimId, workspace.claims]);
   useEffect(() => { setTabState(initialTab); }, [initialTab, project?.id]);
@@ -634,13 +929,34 @@ export default function SynthesisWorkspace({
     });
     setFieldName("");
     setFieldOptions("");
+    setRestoredDrafts((current) => ({ ...current, extractionField: undefined }));
+    onClearDraft("extractionField");
   }
+
+  const claimThemeIds = useMemo(
+    () => expandThemeIds(themes, claimDraft?.themeIds ?? []),
+    [claimDraft?.themeIds, themes],
+  );
+  const claimThemeDescendantCount = claimThemeIds.length - (claimDraft?.themeIds.length ?? 0);
+  const claimRelatedThemes = useMemo(
+    () => relatedThemesFor(claimDraft?.themeIds ?? [], themes, relationships),
+    [claimDraft?.themeIds, relationships, themes],
+  );
+  const claimRelatedExcerpts = useMemo(
+    () => relatedExcerptsFor(claimDraft?.evidence.map((item) => item.excerptId) ?? [], excerpts, relationships),
+    [claimDraft?.evidence, excerpts, relationships],
+  );
+  const [relatedExcerptsOpen, setRelatedExcerptsOpen] = useState(false);
+  const peersByClaim = useMemo(
+    () => new Map(workspace.claims.map((claim) => [claim.id, relatedThemesFor(claim.themeIds, themes, relationships)])),
+    [relationships, themes, workspace.claims],
+  );
 
   const claimEvidenceOptions = useMemo(() => {
     const needle = evidenceQuery.trim().toLocaleLowerCase();
     return excerpts.filter(
       (excerpt) =>
-        matchesThemes(excerpt, claimDraft?.themeIds ?? []) &&
+        matchesThemes(excerpt, claimThemeIds) &&
         (!needle ||
           `${excerpt.text} ${sourceDoc(excerpt)?.title} ${sourceDoc(excerpt)?.fileName}`
             .toLocaleLowerCase()
@@ -662,7 +978,7 @@ export default function SynthesisWorkspace({
         ? workspace.claims.map((item) => (item.id === next.id ? next : item))
         : [...workspace.claims, next],
     });
-    setClaimDraft(undefined);
+    closeClaimDraft();
     setEvidenceQuery("");
   }
 
@@ -1139,6 +1455,13 @@ export default function SynthesisWorkspace({
         {tab === "extraction" && (
           <>
             <form className="extraction-schema-form" onSubmit={addField}>
+              {restoredDrafts.extractionField && (
+                <p className="draft-restored-note">
+                  <Clipboard size={13} />
+                  <span>Draft restored · {new Date(restoredDrafts.extractionField).toLocaleString()}</span>
+                  <button className="button ghost compact" onClick={() => { setFieldName(""); setFieldOptions(""); setRestoredDrafts((current) => ({ ...current, extractionField: undefined })); onClearDraft("extractionField"); }} type="button">Discard draft</button>
+                </p>
+              )}
               <label className="field grow">
                 <span>New extraction field</span>
                 <input
@@ -1502,12 +1825,19 @@ export default function SynthesisWorkspace({
                   </div>
                   <button
                     className="icon-button subtle"
-                    onClick={() => setClaimDraft(undefined)}
+                    onClick={closeClaimDraft}
                     type="button"
                   >
                     <X size={16} />
                   </button>
                 </header>
+                {restoredDrafts.claim && (
+                  <p className="draft-restored-note">
+                    <Clipboard size={13} />
+                    <span>Draft restored · {new Date(restoredDrafts.claim).toLocaleString()}</span>
+                    <button className="button ghost compact" onClick={closeClaimDraft} type="button">Discard draft</button>
+                  </p>
+                )}
                 <div className="claim-editor-main">
                   <section>
                     <label className="field">
@@ -1582,6 +1912,29 @@ export default function SynthesisWorkspace({
                         themes={themes}
                       />
                     </fieldset>
+                    {claimThemeDescendantCount > 0 && (
+                      <p className="claim-theme-rollup">
+                        Includes {claimThemeDescendantCount} child {claimThemeDescendantCount === 1 ? "theme" : "themes"} in the evidence list.
+                      </p>
+                    )}
+                    {claimRelatedThemes.length > 0 && (
+                      <div className="claim-related-themes">
+                        <span>Related themes</span>
+                        {claimRelatedThemes.map(({ theme, reason }) => (
+                          <button
+                            key={theme.id}
+                            onClick={() => onOpenThemeInAtlas(theme.id)}
+                            style={{ "--theme-color": theme.color } as CSSProperties}
+                            title={reason ? `${theme.name} · ${reason}` : `Open ${theme.name} in the theme atlas`}
+                            type="button"
+                          >
+                            <i />
+                            {theme.name}
+                            {reason && <small>{reason}</small>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </section>
                   <section className="claim-evidence-picker">
                     <header>
@@ -1618,6 +1971,65 @@ export default function SynthesisWorkspace({
                         value={evidenceQuery}
                       />
                     </label>
+                    {claimRelatedExcerpts.length > 0 && (
+                      <div className="related-evidence-group">
+                        <button
+                          aria-expanded={relatedExcerptsOpen}
+                          className="related-evidence-toggle"
+                          onClick={() => setRelatedExcerptsOpen((value) => !value)}
+                          type="button"
+                        >
+                          {relatedExcerptsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                          <strong>Related excerpts (atlas links)</strong>
+                          <span>{claimRelatedExcerpts.length}</span>
+                        </button>
+                        {relatedExcerptsOpen && (
+                          <div className="related-evidence-list">
+                            {claimRelatedExcerpts.map(({ excerpt, reason, viaExcerptId }) => {
+                              const via = excerpts.find((item) => item.id === viaExcerptId);
+                              const excluded = reviewFor(excerpt.documentId).status === "excluded";
+                              const alreadyLinked = claimDraft.evidence.some((item) => item.excerptId === excerpt.id && item.role === evidenceRole);
+                              return (
+                                <div className="related-evidence-item" key={excerpt.id}>
+                                  <p className="related-evidence-meta">
+                                    {reason ? <span className="related-evidence-reason">{reason}</span> : <span className="related-evidence-reason muted">No reason recorded</span>}
+                                    {via && <span className="related-evidence-via">via “{short(via.text || "Image excerpt", 46)}”</span>}
+                                    {excluded && <span className="related-source-marker">Excluded source</span>}
+                                  </p>
+                                  <SourceCard
+                                    actions={
+                                      <>
+                                        <button onClick={() => onOpenExcerpt(excerpt.id)} type="button">Open</button>
+                                        <button
+                                          className={`evidence-link-action role-${evidenceRole}`}
+                                          disabled={alreadyLinked}
+                                          onClick={() =>
+                                            setClaimDraft((current) =>
+                                              current
+                                                ? {
+                                                    ...current,
+                                                    evidence: [...current.evidence.filter((item) => item.excerptId !== excerpt.id), { excerptId: excerpt.id, role: evidenceRole }],
+                                                  }
+                                                : current,
+                                            )
+                                          }
+                                          type="button"
+                                        >
+                                          <Plus size={11} /> {roleLabels[evidenceRole]}
+                                        </button>
+                                      </>
+                                    }
+                                    document={sourceDoc(excerpt)}
+                                    excerpt={excerpt}
+                                    role={evidenceRole}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div className="claim-evidence-options">
                       {claimEvidenceOptions.map((excerpt) => {
                         const existingEvidence = claimDraft.evidence.find((item) => item.excerptId === excerpt.id);
@@ -1713,7 +2125,7 @@ export default function SynthesisWorkspace({
                 <footer>
                   <button
                     className="button ghost"
-                    onClick={() => setClaimDraft(undefined)}
+                    onClick={closeClaimDraft}
                     type="button"
                   >
                     Cancel
@@ -1756,7 +2168,25 @@ export default function SynthesisWorkspace({
                     {claim.themeIds.length > 0 && (
                       <div className="claim-card-themes">
                         <span>Claim themes</span>
-                        <ThemeBadges ids={claim.themeIds} themes={themes} />
+                        <ThemeBadges ids={claim.themeIds} paths themes={themes} />
+                      </div>
+                    )}
+                    {(peersByClaim.get(claim.id) ?? []).length > 0 && (
+                      <div className="claim-related-themes">
+                        <span>Related themes</span>
+                        {(peersByClaim.get(claim.id) ?? []).map(({ theme, reason }) => (
+                          <button
+                            key={theme.id}
+                            onClick={() => onOpenThemeInAtlas(theme.id)}
+                            style={{ "--theme-color": theme.color } as CSSProperties}
+                            title={reason ? `${theme.name} · ${reason}` : `Open ${theme.name} in the theme atlas`}
+                            type="button"
+                          >
+                            <i />
+                            {theme.name}
+                            {reason && <small>{reason}</small>}
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -1844,8 +2274,18 @@ export default function SynthesisWorkspace({
                 });
                 setActiveSectionId(sectionId);
                 setSectionTitle("");
+                setRestoredDrafts((current) => ({ ...current, sectionTitle: undefined }));
+                onClearDraft("sectionTitle");
               }}
             >
+              {restoredDrafts.sectionTitle && (
+                <p className="draft-restored-note">
+                  <Clipboard size={13} />
+                  <span>Draft restored · {new Date(restoredDrafts.sectionTitle).toLocaleString()}</span>
+                  <button className="button ghost compact" onClick={() => { setSectionTitle(""); setRestoredDrafts((current) => ({ ...current, sectionTitle: undefined })); onClearDraft("sectionTitle"); }} type="button">Discard draft</button>
+                </p>
+              )}
+
               <input
                 onChange={(event) => setSectionTitle(event.target.value)}
                 placeholder="New section title"
@@ -2105,6 +2545,7 @@ export default function SynthesisWorkspace({
           documents={documents}
           excerpts={excerpts}
           onClose={() => setReportOpen(false)}
+          onSaveReportHtml={onSaveReportHtml}
           project={project}
           themes={themes}
           workspace={workspace}
@@ -2198,6 +2639,7 @@ function Report({
   themes,
   workspace,
   onClose,
+  onSaveReportHtml,
 }: {
   project?: ResearchProject;
   documents: ResearchDocument[];
@@ -2205,7 +2647,22 @@ function Report({
   themes: Theme[];
   workspace: SynthesisWorkspaceState;
   onClose: () => void;
+  onSaveReportHtml: (html: string, suggestedName: string) => Promise<void> | void;
 }) {
+  const reportRef = useRef<HTMLElement | null>(null);
+  const [savingHtml, setSavingHtml] = useState(false);
+
+  async function saveHtmlReport() {
+    const node = reportRef.current;
+    if (!node) return;
+    setSavingHtml(true);
+    try {
+      const html = await buildReportHtml(node, project?.title ?? "Thematic synthesis");
+      await onSaveReportHtml(html, `${project?.title ?? "Thematic synthesis"} synthesis report`);
+    } finally {
+      setSavingHtml(false);
+    }
+  }
   const [ready, setReady] = useState(false);
   useEffect(() => {
     let cancelled = false; let firstFrame = 0; let secondFrame = 0;
@@ -2285,6 +2742,14 @@ function Report({
             <FileDown size={14} /> {ready ? "Print / save PDF" : "Preparing..."}
           </button>
           <button
+            className="button"
+            disabled={!ready || savingHtml}
+            onClick={() => void saveHtmlReport()}
+            type="button"
+          >
+            <FileCode2 size={14} /> {savingHtml ? "Saving…" : "Save HTML"}
+          </button>
+          <button
             className="icon-button subtle"
             onClick={onClose}
             type="button"
@@ -2292,7 +2757,7 @@ function Report({
             <X size={16} />
           </button>
         </div>
-        <article className="synthesis-report">
+        <article className="synthesis-report" ref={reportRef}>
           <header className="report-cover">
             <div className="eyebrow">Thematic evidence synthesis</div>
             <h1>{project?.title ?? "Research synthesis"}</h1>

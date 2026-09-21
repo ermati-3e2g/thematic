@@ -138,6 +138,10 @@ export const backend = {
     return invokeBackend<{ path?: string }>("export_library", { format, projectId, options });
   },
 
+  async saveReportHtml(html: string, fileName: string): Promise<string | null> {
+    return invokeBackend<string | null>("save_report_html", { html, fileName });
+  },
+
   async getSettings(): Promise<AiSettings> {
     return invokeBackend<AiSettings>("get_settings");
   },
