@@ -49,6 +49,14 @@ To open it in Thematic:
 > [!NOTE]
 > A `.thematic` bundle can include copies of its source documents. Review a bundle before sharing it outside its intended audience.
 
+## Installation
+
+1. Download the latest Windows installer from [GitHub Releases](https://github.com/ermati-3e2g/thematic/releases/latest).
+2. Run the downloaded `Thematic_*_x64-setup.exe` file and follow the installer prompts.
+
+> [!WARNING]
+> The Windows installer is currently **not code-signed**. Windows Defender SmartScreen may therefore show an **Unknown publisher** warning. Only install Thematic when it was downloaded from this repository's official GitHub Releases page, and verify the SHA-256 checksum published with the release before running it.
+
 ## Development
 
 ### Prerequisites
@@ -86,3 +94,7 @@ The current bundle configuration produces a Windows NSIS installer.
 - Tauri 2 and Rust
 - SQLite via `rusqlite`
 - PDF.js, KaTeX, and ELK
+
+## AI-assisted development declaration
+
+Thematic has been built using AI-assisted development practices, sometimes described as "vibe coding." AI tools have contributed to planning, implementation, debugging, design iteration, and documentation. The maintainer directs the project and remains responsible for evaluating, maintaining, and releasing the resulting software. This disclosure is included so users and contributors can make an informed assessment of the project and its code.
