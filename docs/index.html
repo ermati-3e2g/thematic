@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#203f37" />
+    <meta
+      name="description"
+      content="Thematic user manual: install the app, organize research sources, capture excerpts, map themes, and build traceable evidence syntheses."
+    />
+    <meta property="og:title" content="Thematic User Manual" />
+    <meta
+      property="og:description"
+      content="A detailed guide to the Thematic research workbench."
+    />
+    <meta property="og:type" content="website" />
+    <title>Thematic User Manual</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="manual.css" />
+    <script src="manual.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to the manual</a>
+
+    <aside class="sidebar" id="manual-navigation" aria-label="Manual navigation">
+      <a class="brand" href="#welcome">
+        <img src="favicon.svg" alt="" />
+        <span>
+          <strong>Thematic</strong>
+          <span>User manual</span>
+        </span>
+      </a>
+
+      <label class="manual-search">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.7-3.7"></path>
+        </svg>
+        <span class="skip-link">Filter manual chapters</span>
+        <input data-manual-search type="search" placeholder="Find a chapter..." />
+      </label>
+
+      <nav data-manual-nav>
+        <a href="#welcome"><span>00</span>Welcome</a>
+        <a href="#installation"><span>01</span>Installation</a>
+        <a href="#quick-start"><span>02</span>Quick start</a>
+        <a href="#interface"><span>03</span>Interface tour</a>
+        <a href="#projects"><span>04</span>Projects and sources</a>
+        <a href="#reader"><span>05</span>Reader and excerpts</a>
+        <a href="#citations"><span>06</span>Metadata and citations</a>
+        <a href="#themes"><span>07</span>Themes and atlas</a>
+        <a href="#synthesis"><span>08</span>Research synthesis</a>
+        <a href="#recovery"><span>09</span>Save and recovery</a>
+        <a href="#export"><span>10</span>Export and sharing</a>
+        <a href="#settings"><span>11</span>Settings and local AI</a>
+        <a href="#shortcuts"><span>12</span>Keyboard shortcuts</a>
+        <a href="#troubleshooting"><span>13</span>Troubleshooting</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        Manual for Thematic 0.10.5<br />
+        <a href="https://github.com/ermati-3e2g/thematic">View the repository</a>
+      </div>
+    </aside>
+
+    <header class="mobile-bar">
+      <strong>Thematic manual</strong>
+      <button data-nav-toggle aria-controls="manual-navigation" aria-expanded="false" type="button">
+        Chapters
+      </button>
+    </header>
+
+    <div class="page">
+      <main class="manual" id="main-content">
+        <section class="hero" id="welcome">
+          <p class="eyebrow">Thematic 0.10.5 &middot; User manual</p>
+          <h1>From sources to a traceable synthesis.</h1>
+          <p class="lede">
+            This manual follows a complete research workflow: create a project, bring in PDF and Markdown sources,
+            capture evidence, organize themes, test claims, and assemble a draft that remains linked to its sources.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#quick-start">Start in five minutes</a>
+            <a class="button secondary" href="https://github.com/ermati-3e2g/thematic/releases/latest">Download the latest release</a>
+          </div>
+          <ul class="quick-facts">
+            <li><strong>Windows desktop app</strong><span>Installer provided as an NSIS setup file</span></li>
+            <li><strong>PDF + Markdown</strong><span>Original source files are not modified</span></li>
+            <li><strong>Portable projects</strong><span>Move work with a <code>.thematic</code> bundle</span></li>
+          </ul>
+        </section>
+
+        <section class="chapter" id="installation">
+          <div class="chapter-heading">
+            <span class="chapter-number">01</span>
+            <div>
+              <h2>Installation</h2>
+              <p>Install Thematic, verify the download, and optionally open the prepared example project.</p>
+            </div>
+          </div>
+
+          <h3>Install on Windows</h3>
+          <ol class="steps">
+            <li>
+              <strong>Open the latest GitHub Release.</strong>
+              Go to <a href="https://github.com/ermati-3e2g/thematic/releases/latest">Thematic Releases</a> and find the Assets list.
+            </li>
+            <li>
+              <strong>Download the installer.</strong>
+              Choose the file named like <code>Thematic_0.10.5_x64-setup.exe</code>. The automatically generated source-code archives are not installers.
+            </li>
+            <li>
+              <strong>Verify the SHA-256 checksum.</strong>
+              Compare the value shown in the release notes with the result of
+              <code>Get-FileHash .\Thematic_0.10.5_x64-setup.exe -Algorithm SHA256</code> in PowerShell.
+            </li>
+            <li>
+              <strong>Run the installer.</strong>
+              Follow the setup prompts, then launch Thematic from its installed shortcut.
+            </li>
+          </ol>
+
+          <div class="callout warning">
+            <strong>Unsigned installer</strong>
+            <p>
+              The installer is not currently code-signed, so Windows Defender SmartScreen may identify the publisher as unknown.
+              Only use an installer downloaded from the official repository and only proceed when its checksum matches the release notes.
+            </p>
+          </div>
+
+          <h3>Optional example project</h3>
+          <p>
+            The release also includes
+            <code>Nature-in-Everyday-Life--What-Helps-Mental-Well-Being-.thematic</code>. It is a separate, optional
+            download containing a populated research workspace. It is useful for exploring the application before creating your own project.
+          </p>
+          <ol>
+            <li>Download the <code>.thematic</code> example from the same release.</li>
+            <li>Launch Thematic and select the folder button beside <strong>Current project</strong>.</li>
+            <li>Select <strong>Import .thematic project</strong>, choose the downloaded file, inspect the preview, and import it as a new project.</li>
+          </ol>
+          <div class="callout">
+            <strong>Portable bundles can contain documents.</strong>
+            <p>A <code>.thematic</code> file can include copies of its source PDFs and Markdown files. Review a bundle before sharing it outside its intended audience.</p>
+          </div>
+        </section>
+
+        <section class="chapter" id="quick-start">
+          <div class="chapter-heading">
+            <span class="chapter-number">02</span>
+            <div>
+              <h2>Quick start</h2>
+              <p>Create a useful project without designing a complete coding scheme in advance.</p>
+            </div>
+          </div>
+
+          <ol class="steps">
+            <li>
+              <strong>Create a blank project.</strong>
+              Open <strong>Manage projects</strong>, enter a concise name under <strong>Create another project</strong>, and select <strong>Create project</strong>.
+            </li>
+            <li>
+              <strong>Add one or two sources.</strong>
+              Select <strong>Add sources</strong> and choose <strong>One or more files</strong>. Starting small makes the interface easier to learn.
+            </li>
+            <li>
+              <strong>Capture a meaningful passage.</strong>
+              Open a document in <strong>Reader</strong>, leave the <strong>Text</strong> tool selected, highlight a passage, add an optional note, and select <strong>Save excerpt</strong>.
+            </li>
+            <li>
+              <strong>Create a broad theme.</strong>
+              Open <strong>Themes</strong>, select <strong>New theme</strong>, and name a pattern that has begun to appear. Add more specific themes later.
+            </li>
+            <li>
+              <strong>Save a checkpoint.</strong>
+              Select <strong>Save</strong> or press <kbd>Ctrl</kbd> + <kbd>S</kbd>. This flushes current changes and creates a recovery point.
+            </li>
+          </ol>
+
+          <div class="callout tip">
+            <strong>A low-friction first session</strong>
+            <p>Use one project, two documents, three excerpts, and one broad theme. Once that loop feels natural, add screening, extraction, claims, and drafting.</p>
+          </div>
+        </section>
+
+        <section class="chapter" id="interface">
+          <div class="chapter-heading">
+            <span class="chapter-number">03</span>
+            <div>
+              <h2>Interface tour</h2>
+              <p>The workbench is organized around three connected spaces: Reader, Themes, and Synthesis.</p>
+            </div>
+          </div>
+
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Reader workspace screenshot">
+              <img src="screenshots/reader-workspace.png" alt="Thematic Reader workspace with the source library on the left, document in the center, and excerpts on the right" />
+            </button>
+            <figcaption>Select the screenshot to enlarge it. The Reader keeps source navigation, document context, and saved evidence visible together.</figcaption>
+          </figure>
+
+          <div class="image-key">
+            <article class="key-item"><span>1</span><strong>Project and navigation</strong><p>Switch projects and move among Reader, Themes, and Synthesis from the top bar.</p></article>
+            <article class="key-item"><span>2</span><strong>Library</strong><p>Browse indexed folders, virtual groups, PDFs, Markdown files, and source metadata.</p></article>
+            <article class="key-item"><span>3</span><strong>Document viewer</strong><p>Read, zoom, select text, capture PDF regions, edit metadata, and copy citations.</p></article>
+            <article class="key-item"><span>4</span><strong>Excerpt panel</strong><p>Review selected text or images, write a note, choose colors, and attach themes.</p></article>
+            <article class="key-item"><span>5</span><strong>Project actions</strong><p>Add sources, save a checkpoint, export data, open settings, or use the Support Center.</p></article>
+            <article class="key-item"><span>6</span><strong>Command palette</strong><p>Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to search common navigation and project actions.</p></article>
+          </div>
+
+          <h3>The three workspaces</h3>
+          <div class="workflow-grid">
+            <article class="workflow-card"><em>READER</em><strong>Collect evidence</strong><p>Read documents and turn selected passages or image regions into annotated excerpts.</p></article>
+            <article class="workflow-card"><em>THEMES</em><strong>Organize meaning</strong><p>Create a hierarchy, inspect relationships, and arrange the evidence map.</p></article>
+            <article class="workflow-card"><em>SYNTHESIS</em><strong>Build an argument</strong><p>Screen sources, extract comparable data, test claims, and draft with evidence nearby.</p></article>
+          </div>
+        </section>
+
+        <section class="chapter" id="projects">
+          <div class="chapter-heading">
+            <span class="chapter-number">04</span>
+            <div>
+              <h2>Projects and sources</h2>
+              <p>Keep separate investigations independent while reusing the same application.</p>
+            </div>
+          </div>
+
+          <h3>Create and switch projects</h3>
+          <p>
+            Select the folder button beside <strong>Current project</strong> to open the <strong>Project manager</strong>. From there you can create, open,
+            rename, export, repair, or remove a project. Creating a project selects it immediately. The drop-down beside <strong>Current project</strong>
+            is the fastest way to switch among existing projects.
+          </p>
+
+          <div class="callout">
+            <strong>Removing a project does not delete the original PDFs or Markdown files.</strong>
+            <p>It removes that project's catalogue records from Thematic. Export a portable copy first if you may need its annotations or synthesis state later.</p>
+          </div>
+
+          <h3>Add sources</h3>
+          <div class="card-grid">
+            <article class="card"><strong>Folder</strong><p>Indexes every supported PDF and Markdown file inside the selected folder. Use this for an established literature folder or corpus.</p></article>
+            <article class="card"><strong>One or more files</strong><p>Adds only the selected PDFs, Markdown files, or mixed selection. Use this for a focused reading queue.</p></article>
+          </div>
+          <p>
+            Use <strong>Add sources</strong> in the header or at the bottom of the Library. Thematic indexes the files and keeps their source paths;
+            it does not rewrite the originals. Use the Library's <strong>Rescan</strong> action after adding or removing files in an indexed folder.
+          </p>
+
+          <h3>Organize the Library</h3>
+          <ul>
+            <li>Use the search field to narrow documents by title or metadata.</li>
+            <li>Filter by physical source folder or create virtual directories for your own working structure.</li>
+            <li>Move a document into a virtual directory without moving its original file on disk.</li>
+            <li>If a source file was moved, use its relink action to point the catalogue record to the new location.</li>
+          </ul>
+
+          <h3>Import an existing project</h3>
+          <p>
+            In <strong>Project manager</strong>, select <strong>Import .thematic project</strong>. The preview reports document records, bundled files,
+            excerpts, themes, graph state, screening records, extractions, claims, draft sections, and recovery checkpoints. Resolve any reported
+            file conflicts before selecting <strong>Import as new project</strong>.
+          </p>
+        </section>
+
+        <section class="chapter" id="reader">
+          <div class="chapter-heading">
+            <span class="chapter-number">05</span>
+            <div>
+              <h2>Reader and excerpts</h2>
+              <p>Capture evidence without losing the document, page, location, note, or analytic context that gives it meaning.</p>
+            </div>
+          </div>
+
+          <h3>Read and navigate</h3>
+          <p>
+            Select a document in the Library to open it in the center panel. PDF sources retain page locations; Markdown sources use document headings
+            or text locators. Use the viewer controls to zoom, move through pages, and switch among the text-selection, image-region, and copy tools.
+          </p>
+
+          <h3>Capture a text excerpt</h3>
+          <ol class="steps">
+            <li><strong>Select the Text tool.</strong> It is the default highlighting mode.</li>
+            <li><strong>Select a passage.</strong> Drag over text in the document, or make a selection and press <kbd>Ctrl</kbd> + <kbd>Enter</kbd>.</li>
+            <li><strong>Record why it matters.</strong> Add a plain-text or Markdown + KaTeX research note; a note is optional.</li>
+            <li><strong>Classify only when useful.</strong> Choose a highlight color and attach zero, one, or several existing themes.</li>
+            <li><strong>Save the excerpt.</strong> Select <strong>Save excerpt</strong>, or use <kbd>Ctrl</kbd> + <kbd>Enter</kbd> when quick capture is enabled.</li>
+          </ol>
+
+          <h3>Capture an image region from a PDF</h3>
+          <p>
+            Select the <strong>Image</strong> tool and drag a rectangle over one PDF page. Review the captured region in the excerpt editor, add a note
+            and themes if needed, then save it. Image excerpts remain visible as thumbnails in the Reader, Theme Atlas, claim evidence, and supported exports.
+          </p>
+
+          <h3>Review and revise excerpts</h3>
+          <ul>
+            <li>Select an excerpt card to edit its note, format, themes, or highlight color.</li>
+            <li>Use <strong>Find in document</strong> to return to the excerpt's saved location.</li>
+            <li>Use <strong>Redefine Selection</strong> to replace the captured area while retaining its note, themes, and color.</li>
+            <li>Press <kbd>Esc</kbd> to cancel an active selection.</li>
+          </ul>
+
+          <div class="callout tip">
+            <strong>Write analytic notes, not summaries alone.</strong>
+            <p>A useful note records why the excerpt matters, what it supports or challenges, and which question it raises for the next reading pass.</p>
+          </div>
+        </section>
+
+        <section class="chapter" id="citations">
+          <div class="chapter-heading">
+            <span class="chapter-number">06</span>
+            <div>
+              <h2>Metadata and citations</h2>
+              <p>Keep the bibliographic record beside every excerpt so evidence remains attributable.</p>
+            </div>
+          </div>
+
+          <h3>Edit a document record</h3>
+          <p>
+            Open a document and select its record-edit action. The <strong>Edit document record</strong> window supports journal articles, books,
+            chapters, theses or dissertations, reports, web sources, and other materials. You can record a citation key, title, authors, publication
+            date, DOI, journal or source, publisher, volume, issue, pages, URL, and abstract.
+          </p>
+          <p>
+            To reuse an existing reference-manager record, paste a BibTeX or BibLaTeX entry and select <strong>Parse entry</strong>. Review the populated
+            fields before saving. The local source path is shown for context but the original document is never changed.
+          </p>
+
+          <h3>Optional metadata lookup</h3>
+          <p>
+            In <strong>Settings</strong>, you can enable citation lookup after import. For PDFs, Thematic can detect an explicit DOI and use online DOI
+            and Crossref services to fill matching bibliographic fields. Documents without a verified match remain unchanged. A Crossref contact email
+            is optional and is sent only with those metadata requests.
+          </p>
+          <div class="callout tip">
+            <strong>Verify imported metadata.</strong>
+            <p>Check author order, dates, page ranges, capitalization, and source type against the document before relying on a generated citation.</p>
+          </div>
+
+          <h3>Copy a citation</h3>
+          <p>Select the document's citation action and choose one of four outputs:</p>
+          <div class="card-grid">
+            <article class="card"><strong>In-text citation</strong><p>A concise author-date form for use while drafting.</p></article>
+            <article class="card"><strong>Bibliography</strong><p>A formatted bibliography entry based on the current document record.</p></article>
+            <article class="card"><strong>BibLaTeX / Biber</strong><p>A structured entry for BibLaTeX workflows.</p></article>
+            <article class="card"><strong>BibTeX</strong><p>A compatible entry for traditional BibTeX workflows.</p></article>
+          </div>
+        </section>
+
+        <section class="chapter" id="themes">
+          <div class="chapter-heading">
+            <span class="chapter-number">07</span>
+            <div>
+              <h2>Themes and the atlas</h2>
+              <p>Move between a conceptual hierarchy and a visual map of themes, excerpts, documents, and analytic notes.</p>
+            </div>
+          </div>
+
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Theme Atlas screenshot">
+              <img src="screenshots/theme-atlas.png" alt="Thematic Theme Atlas showing connected themes and evidence excerpts on a visual canvas" />
+            </button>
+            <figcaption>The Theme Atlas shows how concepts and evidence connect. Select the screenshot to inspect the workspace at full size.</figcaption>
+          </figure>
+
+          <h3>Create a theme</h3>
+          <ol class="steps">
+            <li><strong>Open Themes.</strong> Select <strong>Themes</strong> in the main navigation or press <kbd>Ctrl</kbd> + <kbd>2</kbd>.</li>
+            <li><strong>Select New theme.</strong> Give the theme a specific, recognizable name.</li>
+            <li><strong>Describe its boundary.</strong> Use the description to record what belongs in the theme and what does not.</li>
+            <li><strong>Choose its place.</strong> Leave <strong>Parent theme</strong> empty for a top-level theme, or choose a parent and explain the relationship.</li>
+            <li><strong>Choose a color and save.</strong> Color helps scan the atlas but should not replace a clear name and description.</li>
+          </ol>
+
+          <h3>Connect evidence and concepts</h3>
+          <p>
+            Assign themes to excerpts from the Reader, or inspect and edit connections from the Theme Atlas. Select <strong>Connect nodes</strong>, choose
+            the first node, then the second. Relationships can be labeled so the graph records the analytic meaning of a connection rather than only its existence.
+          </p>
+          <ul>
+            <li>Theme-to-excerpt connections show which evidence was coded to a concept.</li>
+            <li>Theme-to-theme connections can express parent relationships or other conceptual links.</li>
+            <li>Excerpt-to-excerpt relationships can record comparison, contradiction, sequence, or another explicit connection.</li>
+            <li>Graph notes provide movable analytic annotations that are not forced into the theme hierarchy.</li>
+          </ul>
+
+          <h3>Arrange and filter the graph</h3>
+          <p>
+            Drag nodes to create a useful working arrangement. Use auto-layout when the graph becomes crowded, or choose another default layout in Settings:
+            relationship map, organic clusters, hierarchy, radial focus, or compact tree. Search and filters can narrow the graph by project, theme, document,
+            or matching text. Label visibility, node scale, node shapes, and zoom can also be adjusted.
+          </p>
+          <div class="card-grid">
+            <article class="card"><strong>Graph view</strong><p>Best for relationships, clusters, comparison, and spatial working arrangements.</p></article>
+            <article class="card"><strong>List view</strong><p>Best for reviewing the hierarchy and reading excerpts grouped under their themes.</p></article>
+          </div>
+
+          <h3>Useful atlas shortcuts</h3>
+          <ul>
+            <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> re-centers the graph.</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd> applies auto-layout.</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> toggles graph Zen mode.</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> adds a graph note.</li>
+          </ul>
+        </section>
+
+        <section class="chapter" id="synthesis">
+          <div class="chapter-heading">
+            <span class="chapter-number">08</span>
+            <div>
+              <h2>Research synthesis</h2>
+              <p>Turn a coded reading collection into a review protocol, structured evidence, claims, and a source-linked draft.</p>
+            </div>
+          </div>
+
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Synthesis workspace screenshot">
+              <img src="screenshots/synthesis-workspace.png" alt="Thematic Synthesis workspace with a draft outline and linked source evidence" />
+            </button>
+            <figcaption>The Draft stage keeps the outline and its evidence shelf in the same workspace. Select the image to enlarge it.</figcaption>
+          </figure>
+
+          <p>
+            Open <strong>Synthesis</strong> from the main navigation or press <kbd>Ctrl</kbd> + <kbd>3</kbd>. The six tabs form a suggested progression,
+            but they are not a locked sequence. Use only the stages that fit your method.
+          </p>
+
+          <div class="workflow-grid">
+            <article class="workflow-card"><em>01 PROTOCOL</em><strong>Define the review</strong><p>Record the research question, scope and context, inclusion criteria, and exclusion criteria.</p></article>
+            <article class="workflow-card"><em>02 SCREENING</em><strong>Decide what belongs</strong><p>Mark sources as inbox, to read, included, or excluded; add priorities, reasons, and notes.</p></article>
+            <article class="workflow-card"><em>03 EXTRACTION</em><strong>Compare consistently</strong><p>Define reusable text, number, yes/no, date, or category fields and complete them for included sources.</p></article>
+            <article class="workflow-card"><em>04 CLAIMS</em><strong>Test propositions</strong><p>State a claim, record confidence and status, and link supporting, qualifying, or contradicting excerpts.</p></article>
+            <article class="workflow-card"><em>05 DRAFT</em><strong>Assemble the argument</strong><p>Create and reorder sections, write in Markdown + KaTeX, attach claims, and add source excerpts from the shelf.</p></article>
+            <article class="workflow-card"><em>06 HEALTH</em><strong>Find gaps</strong><p>Review missing decisions, metadata gaps, unthemed excerpts, unsupported claims, and orphaned records.</p></article>
+          </div>
+
+          <h3>1. Write the protocol</h3>
+          <p>
+            Start with a focused research question. Use <strong>Scope and context</strong> for population, time frame, setting, or conceptual boundaries.
+            Write inclusion and exclusion criteria as decisions another person could apply consistently. These fields support Markdown and KaTeX.
+          </p>
+
+          <h3>2. Screen sources</h3>
+          <p>
+            Search or filter the source list, then record a status, priority, exclusion reason when relevant, and a screening note. Select multiple visible
+            records to apply batch decisions such as Include, Exclude, To read, or High priority. Use the source-opening action whenever the decision requires full-text review.
+          </p>
+
+          <h3>3. Define an extraction schema</h3>
+          <p>
+            Add fields that every included source should answer, such as sample size, study design, location, intervention, or core finding. Select a source,
+            complete each field, and use its linked excerpts as evidence. A small, stable schema usually produces cleaner comparisons than a large schema that changes mid-review.
+          </p>
+
+          <h3>4. Build evidence-backed claims</h3>
+          <p>
+            A claim is more than a theme: it is a proposition that can be supported, qualified, or contradicted. Give the claim a status and confidence value,
+            attach relevant themes, and link excerpts with an explicit evidence role. Review the detailed excerpt context before deciding what role it plays.
+          </p>
+
+          <h3>5. Draft beside the evidence</h3>
+          <p>
+            Create sections, drag or use arrow controls to reorder them, and link the claims each section addresses. The source shelf can be limited to evidence
+            attached to those claims and then filtered further by relationship role or theme. Add selected excerpts to the section and write without leaving the evidence context.
+            Use <strong>Copy Markdown</strong> when you want the outline in another writing tool.
+          </p>
+
+          <h3>6. Generate and inspect a report</h3>
+          <p>
+            Select <strong>Synthesis report</strong> to review a consolidated representation of the protocol, screening, extraction, claims, and draft.
+            The report can be saved as HTML. Before sharing, use the Health tab and manually check every substantive claim against its linked evidence.
+          </p>
+
+          <div class="callout warning">
+            <strong>Traceability supports judgment; it does not replace it.</strong>
+            <p>Linked excerpts make reasoning inspectable, but you remain responsible for source quality, interpretation, methodological decisions, and final conclusions.</p>
+          </div>
+        </section>
+
+        <section class="chapter" id="recovery">
+          <div class="chapter-heading">
+            <span class="chapter-number">09</span>
+            <div>
+              <h2>Save, focus, and recovery</h2>
+              <p>Protect continuity across long research sessions without turning project management into a second project.</p>
+            </div>
+          </div>
+
+          <h3>Save deliberately</h3>
+          <p>
+            The header status reports whether changes are saved, pending, or in error. Select <strong>Save</strong> or press <kbd>Ctrl</kbd> + <kbd>S</kbd>
+            to flush current changes and create a recovery checkpoint. Manual checkpoints preserve graph and synthesis workspace state; they do not roll the
+            underlying catalogue back to an earlier version.
+          </p>
+
+          <h3>Use the Research Support Center</h3>
+          <p>Select the coffee-cup button in the header. Its four tabs help maintain continuity:</p>
+          <dl class="definition-list">
+            <dt>Focus lane</dt><dd>Build a temporary, reorderable queue of documents, excerpts, claims, or draft sections for the current session.</dd>
+            <dt>Attention</dt><dd>Review quality and continuity flags. Items clear when the underlying issue is addressed; dismissed items can return if it changes.</dd>
+            <dt>Session</dt><dd>Optionally track time or completed items, record breaks, and finish with a private handoff note and next starting point.</dd>
+            <dt>Recovery</dt><dd>Resume unfinished excerpt drafts and create or restore graph and synthesis checkpoints.</dd>
+          </dl>
+
+          <h3>Resume after reopening</h3>
+          <p>
+            When resume prompts are enabled in Settings, Thematic can offer to reopen the previous project, workspace, document, excerpt, synthesis tab,
+            and Library filter. Choose <strong>Resume</strong> to continue or <strong>Start elsewhere</strong> to dismiss the prompt.
+          </p>
+
+          <div class="callout warning">
+            <strong>Checkpoints are not a substitute for backups.</strong>
+            <p>Export a <code>.thematic</code> bundle regularly and keep copies in a separate, appropriately protected location.</p>
+          </div>
+        </section>
+
+        <section class="chapter" id="export">
+          <div class="chapter-heading">
+            <span class="chapter-number">10</span>
+            <div>
+              <h2>Export, backup, and sharing</h2>
+              <p>Choose an output based on whether the recipient needs the project, the data, or a human-readable synthesis.</p>
+            </div>
+          </div>
+
+          <p>
+            Select the download button in the header, use the command palette, or press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> to open
+            <strong>Export project</strong>. The summary shows the number of documents, excerpts, and themes before export.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Format</th><th>Best for</th><th>Contents</th></tr></thead>
+              <tbody>
+                <tr><td><code>.thematic</code></td><td>Backup, transfer, or collaboration in Thematic</td><td>A self-contained portable project, including copies of available source PDFs and Markdown files.</td></tr>
+                <tr><td><code>.xlsx</code></td><td>Review in Excel or another spreadsheet tool</td><td>Separate sheets for documents, excerpts, themes, and relationships; image excerpts are embedded.</td></tr>
+                <tr><td><code>.csv</code></td><td>Simple interchange and analysis</td><td>A flat table with one row per annotated excerpt. Image binary data is intentionally omitted.</td></tr>
+                <tr><td><code>.sqlite3</code></td><td>Queries, scripts, and archival transfer</td><td>A relational copy of the catalogue, including image excerpt data.</td></tr>
+                <tr><td><code>.zip</code></td><td>General-purpose data archive</td><td>Catalogue JSON plus no sources, only sources used in the synthesis outline, or all available source files.</td></tr>
+                <tr><td><code>.html</code> report</td><td>Reading or sharing a synthesis</td><td>A rendered synthesis report saved from the Synthesis workspace.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Recommended backup routine</h3>
+          <ol>
+            <li>At the end of a substantial session, press <kbd>Ctrl</kbd> + <kbd>S</kbd>.</li>
+            <li>Export a portable <code>.thematic</code> bundle.</li>
+            <li>Name or store the bundle so the project and backup date are unambiguous.</li>
+            <li>Keep at least one copy outside the computer that runs Thematic.</li>
+            <li>Occasionally import a backup as a new project to confirm that it opens as expected.</li>
+          </ol>
+
+          <h3>Before sharing</h3>
+          <ul>
+            <li>Assume excerpts, notes, image regions, citations, screening decisions, and synthesis text may contain sensitive research material.</li>
+            <li>Remember that portable bundles can include complete source documents.</li>
+            <li>Use a data-only export when recipients do not need copyrighted or confidential source files.</li>
+            <li>Open the exported result and inspect it before sending or publishing it.</li>
+          </ul>
+        </section>
+
+        <section class="chapter" id="settings">
+          <div class="chapter-heading">
+            <span class="chapter-number">11</span>
+            <div>
+              <h2>Settings and optional local AI</h2>
+              <p>Adapt reading, graph, accessibility, citation, and assistance defaults to your workflow.</p>
+            </div>
+          </div>
+
+          <p>Select the gear button or press <kbd>Ctrl</kbd> + <kbd>,</kbd> to open <strong>Workbench settings</strong>.</p>
+
+          <h3>Workspace defaults</h3>
+          <div class="card-grid">
+            <article class="card"><strong>Reading and notes</strong><p>Choose plain text or Markdown + KaTeX, initial reader zoom, and default excerpt color.</p></article>
+            <article class="card"><strong>Graph behavior</strong><p>Set label visibility, default layout, initial zoom, node scaling, graph-note color, and theme or excerpt shapes.</p></article>
+            <article class="card"><strong>Appearance</strong><p>Choose an academic color scheme, coordinated font set, interface text size, and comfortable, compact, or presentation density.</p></article>
+            <article class="card"><strong>Continuity</strong><p>Enable resume prompts, quick excerpt capture, quiet break reminders, and optional session targets.</p></article>
+          </div>
+
+          <h3>Online citation lookup</h3>
+          <p>
+            This feature is off unless enabled. When enabled, Thematic can detect an explicit DOI in imported PDFs, verify it through online DOI and Crossref
+            services, and populate matching metadata. The optional contact email is included only in Crossref metadata requests. Leave the feature off when
+            the project must not make those requests.
+          </p>
+
+          <h3>Local theme suggestions</h3>
+          <p>
+            Theme suggestions are optional and disabled by default. You can connect Thematic to an Ollama service or a local <code>llama.cpp</code>
+            <code>llama-server</code>. Endpoints are expected on localhost; the usual defaults are port 11434 for Ollama and 8080 for llama.cpp.
+            Suggestions are presented for review and are not saved until you accept them and save the excerpt.
+          </p>
+
+          <h4>Ollama</h4>
+          <ol>
+            <li>Run Ollama and ensure the intended model is available.</li>
+            <li>Enable <strong>Local theme suggestions</strong>.</li>
+            <li>Choose <strong>Ollama</strong>, verify the localhost endpoint, and enter the model name.</li>
+            <li>Save settings, open an excerpt, and select <strong>Theme suggestion</strong>.</li>
+          </ol>
+
+          <h4>llama.cpp</h4>
+          <ol>
+            <li>Choose <strong>llama.cpp (GGUF)</strong> as the local service.</li>
+            <li>Select or enter the <code>llama-server</code> executable and main GGUF model.</li>
+            <li>Review the additional server arguments and localhost endpoint.</li>
+            <li>For image suggestions, enable the image option and choose the matching multimodal projector GGUF.</li>
+          </ol>
+
+          <div class="callout">
+            <strong>Storage and network boundaries</strong>
+            <p>
+              The desktop catalogue is stored in SQLite on the computer, while original documents remain at their existing paths. Extracted text,
+              annotations, and image excerpts enter the catalogue. Local-model suggestions use the configured localhost service; optional citation lookup is a separate online feature.
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="shortcuts">
+          <div class="chapter-heading">
+            <span class="chapter-number">12</span>
+            <div>
+              <h2>Keyboard shortcuts</h2>
+              <p>Use the keyboard to move among research stages and preserve flow while reading.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Open the command palette.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd></td><td>Open Reader, Themes, or Synthesis.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Save and create a recovery checkpoint.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Quick-save the open excerpt when quick capture is enabled.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd></td><td>Open project export.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>&larr;</kbd> / <kbd>&rarr;</kbd></td><td>Move to the previous or next focus item.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td><td>Re-center the Theme Atlas graph.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></td><td>Apply automatic graph layout.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Toggle graph Zen mode.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd></td><td>Add a graph note.</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>,</kbd></td><td>Open Workbench settings.</td></tr>
+                <tr><td><kbd>F11</kbd></td><td>Enter fullscreen; press <kbd>Esc</kbd> to leave.</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Cancel an active excerpt selection or close the current transient state.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="troubleshooting">
+          <div class="chapter-heading">
+            <span class="chapter-number">13</span>
+            <div>
+              <h2>Troubleshooting</h2>
+              <p>Start with the symptom, protect the project, and make the smallest corrective change.</p>
+            </div>
+          </div>
+
+          <h3>Windows reports an unknown publisher</h3>
+          <p>
+            This is expected for the current unsigned installer. Confirm that it came from the official GitHub Release and verify its SHA-256 checksum
+            against the value in the release notes. Do not proceed when the source or checksum is uncertain.
+          </p>
+
+          <h3>A source no longer opens</h3>
+          <p>
+            The original file may have been moved, renamed, disconnected, or deleted. Find the document in the Library and use its relink action to choose
+            the new path. Relinking preserves the catalogue record and its excerpts.
+          </p>
+
+          <h3>An indexed folder is out of date</h3>
+          <p>Use the Library's rescan action. This re-reads the folder catalogue while keeping interface preferences and existing analytic work.</p>
+
+          <h3>An excerpt draft disappeared from the panel</h3>
+          <p>
+            Open the <strong>Research Support Center</strong>, choose <strong>Recovery</strong>, and look under <strong>Unfinished drafts</strong>.
+            Select <strong>Resume</strong> to reopen one. Thematic retains a limited recent set, so save important excerpts promptly.
+          </p>
+
+          <h3>The graph is crowded or appears lost</h3>
+          <p>
+            Clear active filters, re-center the graph with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>, and apply auto-layout with
+            <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd>. Reduce visible labels or filter by theme or document before arranging nodes manually.
+          </p>
+
+          <h3>Citation metadata was not found</h3>
+          <p>
+            Confirm that online citation lookup is enabled and that the computer can reach the metadata service. Check the DOI printed in the PDF, enter it
+            in the document record, and retry <strong>Find metadata</strong>. When no reliable match exists, enter or import the metadata manually.
+          </p>
+
+          <h3>Local theme suggestions do not run</h3>
+          <ul>
+            <li>Confirm that the Ollama or llama.cpp service is running on the endpoint saved in Settings.</li>
+            <li>Verify the model name or GGUF path and the <code>llama-server</code> executable.</li>
+            <li>For image excerpts, confirm that visual suggestions are enabled and the multimodal projector matches the model.</li>
+            <li>Theme suggestions are optional; excerpts, themes, and synthesis work normally without them.</li>
+          </ul>
+
+          <h3>A portable project reports missing or conflicting files</h3>
+          <p>
+            Read the import preview and resolve every reported source before confirming. If you are repairing an existing project, create a fresh export first.
+            Repair adds missing bundle state without intentionally replacing current edits, but a separate backup remains the safest recovery point.
+          </p>
+
+          <h3>Get further help</h3>
+          <p>
+            Search existing reports or open a new issue in the
+            <a href="https://github.com/ermati-3e2g/thematic/issues">Thematic issue tracker</a>. Include the app version, what you expected, what happened,
+            and reproducible steps. Do not attach confidential source files or portable projects to a public issue.
+          </p>
+        </section>
+
+        <footer class="manual-footer">
+          <p><strong>Thematic User Manual</strong> &middot; Version 0.10.5 &middot; Updated September 2026</p>
+          <p>
+            Thematic has been built using AI-assisted development practices, sometimes described as "vibe coding." AI tools have contributed to planning,
+            implementation, debugging, design iteration, and documentation. The maintainer directs the project and remains responsible for evaluating,
+            maintaining, and releasing the resulting software.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <button class="back-to-top" data-back-to-top type="button" aria-label="Back to top">&uarr;</button>
+    <dialog class="image-dialog" data-image-dialog>
+      <button type="button" aria-label="Close enlarged screenshot">&times;</button>
+      <img alt="" />
+    </dialog>
+  </body>
+</html>

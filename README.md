@@ -6,6 +6,10 @@ Thematic brings PDF and Markdown reading, excerpt capture, thematic mapping, cit
 
 ![Thematic reader workspace showing the Nature and Well-Being example project](docs/screenshots/reader-workspace.png)
 
+## User manual
+
+The detailed [Thematic User Manual](https://ermati-3e2g.github.io/thematic/) covers installation, first-project setup, source management, excerpt capture, themes, synthesis, exports, recovery, settings, and troubleshooting.
+
 ## What you can do
 
 - Organize multiple research projects and source libraries.
