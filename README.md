@@ -54,8 +54,24 @@ To open it in Thematic:
 1. Download the latest Windows installer from [GitHub Releases](https://github.com/ermati-3e2g/thematic/releases/latest).
 2. Run the downloaded `Thematic_*_x64-setup.exe` file and follow the installer prompts.
 
+The release also includes the optional `Nature-in-Everyday-Life--What-Helps-Mental-Well-Being-.thematic` example project. After installing Thematic, download this file from the same release and import it through **Manage projects -> Import .thematic project** to explore a populated workspace.
+
 > [!WARNING]
 > The Windows installer is currently **not code-signed**. Windows Defender SmartScreen may therefore show an **Unknown publisher** warning. Only install Thematic when it was downloaded from this repository's official GitHub Releases page, and verify the SHA-256 checksum published with the release before running it.
+
+## Start a project from scratch
+
+You can begin with only a project name and one document; there is no need to design a complete theme structure first.
+
+1. **Create a project.** Select the folder button beside **Current project** to open **Manage projects**. Enter a name under **Create another project**, then select **Create project**. The new project opens automatically.
+2. **Add your reading material.** Select **Add sources** in the header. Choose **Folder** to index every supported file in a folder, or **One or more files** to add a smaller selection. Thematic supports PDF and Markdown sources.
+3. **Open a document.** In the **Reader** workspace, select a document from the Library and begin reading.
+4. **Capture your first excerpt.** Keep the **Text** tool selected, highlight a useful passage, add an optional research note, then select **Save excerpt**. Repeat this whenever a passage contributes evidence, context, or a question worth retaining.
+5. **Develop themes as patterns emerge.** Open **Themes**, select **New theme**, and give the theme a clear name and optional description. Open saved excerpts to associate them with one or more themes.
+6. **Create a recovery point.** Select **Save** in the header or press `Ctrl+S`. When the project is ready to back up or share, open **Manage projects** and select **Export .thematic**.
+
+> [!TIP]
+> Start with a few documents and a small set of broad themes, then refine them as you read. Thematic indexes your original PDF and Markdown files but does not modify them.
 
 ## Development
 
