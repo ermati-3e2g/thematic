@@ -1,18 +1,70 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Frontend build output and caches
 dist/
 .vite/
-src-tauri/target/
-.sites-runtime/
-*.log
-.DS_Store
-
-# Build caches and generated output
 *.tsbuildinfo
-.pnpm-store/
+vite.config.*.timestamp-*
+
+# Rust / Tauri build output and generated files
+target/
+src-tauri/target/
 .cargo-target-check/
 .verification-target/
 src-tauri/.cargo-check-target/
 src-tauri/gen/schemas/
+
+# Packaging, verification, and temporary output
 release/
-tmp/
 output/
+tmp/
+coverage/
+.sites-runtime/
+
+# Local/private sample data
+samples/
+
+# Repository-local notes and agent instructions
+DESC.md
+SKILLS.md
+
+# Incomplete Thematic exports
+.thematic-export-*.partial
+.thematic-export-*.sqlite3
+.thematic-previous-*.backup
+
+# Local environment files (keep shareable examples)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs and diagnostic output
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor and IDE state
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS and machine-local files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
