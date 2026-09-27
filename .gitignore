@@ -29,6 +29,9 @@ samples/
 # Repository-local notes and agent instructions
 DESC.md
 SKILLS.md
+GITHUB_MULTI_ACCOUNT_GUIDE.md
+docs/ergonomics-roadmap.md
+.superdesign/
 
 # Incomplete Thematic exports
 .thematic-export-*.partial
