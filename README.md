@@ -118,3 +118,7 @@ The current bundle configuration produces a Windows NSIS installer.
 ## AI-assisted development declaration
 
 Thematic has been built using AI-assisted development practices, sometimes described as "vibe coding." AI tools have contributed to planning, implementation, debugging, design iteration, and documentation. The maintainer directs the project and remains responsible for evaluating, maintaining, and releasing the resulting software. This disclosure is included so users and contributors can make an informed assessment of the project and its code.
+
+## License
+
+Thematic is licensed under the [Apache License 2.0](LICENSE). Third-party components and material remain subject to their respective licenses; see [NOTICE](NOTICE).

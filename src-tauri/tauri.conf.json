@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Thematic",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "identifier": "app.thematic.research",
   "build": {
     "beforeDevCommand": "node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 1420",
@@ -26,6 +26,8 @@
     }
   },
   "bundle": {
+    "copyright": "Copyright 2026 ermati-3e2g",
+    "licenseFile": "../LICENSE",
     "active": true,
     "targets": ["nsis"],
     "fileAssociations": [{ "ext": ["thematic"], "name": "Thematic project", "description": "Portable Thematic research project", "role": "Editor" }],

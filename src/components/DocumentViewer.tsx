@@ -548,7 +548,8 @@ function PdfDocument({
     let cancelled = false;
     setPdf(undefined);
     setError(undefined);
-    const task = getDocument(source instanceof Uint8Array ? { data: source } : source);
+    // Canvas and text layers only: do not add PDF.js AnnotationLayer or PDFScriptingManager here.
+    const task = getDocument(source instanceof Uint8Array ? { data: source } : { url: source });
     task.promise
       .then((loaded) => {
         if (!cancelled) setPdf(loaded);

@@ -72,6 +72,6 @@ export async function detectPdfDoi(payload: DocumentPayload): Promise<string | u
     const openingMaterial = openingPages.slice(0, introduction >= 0 ? introduction : 6_000);
     return explicitDoiInText(openingMaterial);
   } finally {
-    await pdf.destroy();
+    await task.destroy();
   }
 }
