@@ -457,7 +457,7 @@ input {
   font-weight: 800;
 }
 
-.steps strong {
+.steps > li > strong:first-child {
   display: block;
   margin-bottom: 0.15rem;
 }
