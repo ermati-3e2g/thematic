@@ -72,6 +72,34 @@ document.querySelectorAll("[data-enlarge]").forEach((button) => {
   });
 });
 
+
+document.querySelectorAll("[data-screenshot-tabs]").forEach((tabs) => {
+  const tabButtons = [...tabs.querySelectorAll('[role="tab"]')];
+  const panels = [...tabs.querySelectorAll('[role="tabpanel"]')];
+
+  function selectTab(selected) {
+    tabButtons.forEach((button) => {
+      const active = button === selected;
+      button.setAttribute("aria-selected", String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    panels.forEach((panel) => {
+      panel.hidden = panel.id !== selected.getAttribute("aria-controls");
+    });
+  }
+
+  tabButtons.forEach((button, index) => {
+    button.addEventListener("click", () => selectTab(button));
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      const next = tabButtons[(index + direction + tabButtons.length) % tabButtons.length];
+      selectTab(next);
+      next.focus();
+    });
+  });
+});
 dialogClose?.addEventListener("click", () => dialog.close());
 dialog?.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();

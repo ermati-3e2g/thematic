@@ -546,20 +546,26 @@
             <dt>Recovery</dt><dd>Resume unfinished excerpt drafts and create or restore graph and synthesis checkpoints.</dd>
           </dl>
 
-          <div class="screenshot-grid">
-            <figure class="figure">
+          <div class="screenshot-tabs" data-screenshot-tabs>
+            <div class="screenshot-tab-list" role="tablist" aria-label="Research Support Center views">
+              <button type="button" role="tab" aria-selected="true" aria-controls="support-focus" id="support-focus-tab">Focus lane</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="support-attention" id="support-attention-tab" tabindex="-1">Attention</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="support-session" id="support-session-tab" tabindex="-1">Session</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="support-recovery" id="support-recovery-tab" tabindex="-1">Recovery</button>
+            </div>
+            <figure class="figure" role="tabpanel" id="support-focus" aria-labelledby="support-focus-tab">
               <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Focus lane screenshot"><img src="screenshots/research-support-center-focus-lane.png" loading="lazy" alt="Focus lane with a reorderable queue of documents, excerpts, claims, and sections" /></button>
               <figcaption><strong>Focus lane:</strong> add, reorder, complete, or remove the small set of items you intend to handle next.</figcaption>
             </figure>
-            <figure class="figure">
+            <figure class="figure" role="tabpanel" id="support-attention" aria-labelledby="support-attention-tab" hidden>
               <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Attention screenshot"><img src="screenshots/research-support-center-attention.png" loading="lazy" alt="Attention tab listing citation issues and unfinished excerpt drafts" /></button>
               <figcaption><strong>Attention:</strong> resolve quality and continuity flags; dismissed items can return if the underlying issue remains.</figcaption>
             </figure>
-            <figure class="figure">
+            <figure class="figure" role="tabpanel" id="support-session" aria-labelledby="support-session-tab" hidden>
               <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Session support screenshot"><img src="screenshots/research-support-center-session.png" loading="lazy" alt="Session tab with progress, break controls, handoff note, and next starting point" /></button>
               <figcaption><strong>Session:</strong> track an optional target and end with a private handoff note and next starting point.</figcaption>
             </figure>
-            <figure class="figure">
+            <figure class="figure" role="tabpanel" id="support-recovery" aria-labelledby="support-recovery-tab" hidden>
               <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Recovery screenshot"><img src="screenshots/research-support-center-recovery.png" loading="lazy" alt="Recovery tab with unfinished excerpt drafts and checkpoint controls" /></button>
               <figcaption><strong>Recovery:</strong> resume or remove unfinished drafts and create labeled graph or synthesis checkpoints.</figcaption>
             </figure>
@@ -594,7 +600,7 @@
             </div>
           </div>
 
-          <figure class="figure">
+          <figure class="figure figure--compact">
             <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge project export screenshot">
               <img src="screenshots/export-panel.png" loading="lazy" alt="Export project panel listing Excel, CSV, SQLite, library archive, and portable project formats" />
             </button>

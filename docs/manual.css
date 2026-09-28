@@ -467,6 +467,10 @@ input {
   margin: 2rem 0;
 }
 
+.figure--compact {
+  max-width: 40.5rem;
+}
+
 .screenshot-button {
   display: block;
   width: 100%;
@@ -503,6 +507,43 @@ input {
 
 .screenshot-grid .figure {
   margin: 0;
+}
+
+.screenshot-tabs {
+  max-width: 54rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.screenshot-tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.screenshot-tab-list button {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.screenshot-tab-list button[aria-selected="true"] {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: white;
+}
+
+.screenshot-tabs .figure {
+  margin: 0;
+}
+
+.screenshot-tabs [hidden] {
+  display: none;
 }
 
 .image-key,
