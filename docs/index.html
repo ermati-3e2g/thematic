@@ -16,8 +16,8 @@
     <meta property="og:type" content="website" />
     <title>Thematic User Manual</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="manual.css?v=20260928-2" />
-    <script src="manual.js?v=20260928-2" defer></script>
+    <link rel="stylesheet" href="manual.css?v=20260928-3" />
+    <script src="manual.js?v=20260928-3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to the manual</a>
@@ -58,7 +58,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        Manual for Thematic 0.10.5<br />
+        Manual for Thematic 0.10.6<br />
         <a href="https://github.com/ermati-3e2g/thematic">View the repository</a>
       </div>
     </aside>
@@ -73,7 +73,7 @@
     <div class="page">
       <main class="manual" id="main-content">
         <section class="hero" id="welcome">
-          <p class="eyebrow">Thematic 0.10.5 &middot; User manual</p>
+          <p class="eyebrow">Thematic 0.10.6 &middot; User manual</p>
           <h1>From sources to a traceable synthesis.</h1>
           <p class="lede">
             This manual follows a complete research workflow: create a project, bring in PDF and Markdown sources,
@@ -95,37 +95,62 @@
             <span class="chapter-number">01</span>
             <div>
               <h2>Installation</h2>
-              <p>Install Thematic, verify the download, and optionally open the prepared example project.</p>
+              <p>Install Thematic on Windows, macOS, or Linux, then optionally open the prepared example project.</p>
             </div>
           </div>
 
-          <h3>Install on Windows</h3>
-          <ol class="steps">
-            <li>
-              <strong>Open the latest GitHub Release.</strong>
-              Go to <a href="https://github.com/ermati-3e2g/thematic/releases/latest">Thematic Releases</a> and find the Assets list.
-            </li>
-            <li>
-              <strong>Download the installer.</strong>
-              Choose the file named like <code>Thematic_0.10.5_x64-setup.exe</code>. The automatically generated source-code archives are not installers.
-            </li>
-            <li>
-              <strong>Verify the SHA-256 checksum.</strong>
-              Compare the value shown in the release notes with the result of
-              <code>Get-FileHash .\Thematic_0.10.5_x64-setup.exe -Algorithm SHA256</code> in PowerShell.
-            </li>
-            <li>
-              <strong>Run the installer.</strong>
-              Follow the setup prompts, then launch Thematic from its installed shortcut.
-            </li>
-          </ol>
+          <p>
+            Open the <a href="https://github.com/ermati-3e2g/thematic/releases/latest">latest Thematic release</a>, expand its Assets list,
+            and select your platform below. Checking the SHA-256 value in the release notes is optional, but it can confirm that a download is complete and unchanged.
+            The automatically generated source-code archives are not installers.
+          </p>
 
-          <div class="callout warning">
-            <strong>Unsigned installer</strong>
-            <p>
-              The installer is not currently code-signed, so Windows Defender SmartScreen may identify the publisher as unknown.
-              Only use an installer downloaded from the official repository and only proceed when its checksum matches the release notes.
-            </p>
+          <div class="content-tabs" data-tabs>
+            <div class="tab-list" role="tablist" aria-label="Installation platforms">
+              <button type="button" role="tab" id="install-windows-tab" aria-controls="install-windows" aria-selected="true">Windows</button>
+              <button type="button" role="tab" id="install-macos-tab" aria-controls="install-macos" aria-selected="false">macOS</button>
+              <button type="button" role="tab" id="install-debian-tab" aria-controls="install-debian" aria-selected="false">Debian / Ubuntu</button>
+              <button type="button" role="tab" id="install-appimage-tab" aria-controls="install-appimage" aria-selected="false">AppImage</button>
+            </div>
+
+            <div role="tabpanel" id="install-windows" aria-labelledby="install-windows-tab">
+              <h3>Windows x64</h3>
+              <ol class="steps">
+                <li>Download <code>Thematic_0.10.6_x64-setup.exe</code>.</li>
+                <li>Optionally verify it in PowerShell with <code>Get-FileHash .\Thematic_0.10.6_x64-setup.exe -Algorithm SHA256</code>.</li>
+                <li>Run the installer, follow the setup prompts, and launch Thematic from its installed shortcut.</li>
+              </ol>
+              <div class="callout warning"><strong>Unsigned installer</strong><p>Windows Defender SmartScreen may identify the publisher as unknown because this installer is not currently code-signed. Only use an installer downloaded from the official repository.</p></div>
+            </div>
+
+            <div role="tabpanel" id="install-macos" aria-labelledby="install-macos-tab" hidden>
+              <h3>macOS</h3>
+              <ol class="steps">
+                <li>Download <code>Thematic_0.10.6_aarch64.dmg</code> for an Apple silicon Mac, or <code>Thematic_0.10.6_x64.dmg</code> for an Intel Mac.</li>
+                <li>Optionally verify it in Terminal with <code>shasum -a 256 &lt;downloaded-file.dmg&gt;</code>.</li>
+                <li>Open the disk image, drag Thematic to <strong>Applications</strong>, and launch it from there.</li>
+              </ol>
+              <div class="callout warning"><strong>Not Apple-notarized</strong><p>The macOS packages are ad-hoc signed but not Apple-notarized. If macOS blocks the first launch, approve Thematic under <strong>System Settings &gt; Privacy &amp; Security</strong>, then open it again.</p></div>
+            </div>
+
+            <div role="tabpanel" id="install-debian" aria-labelledby="install-debian-tab" hidden>
+              <h3>Debian or Ubuntu x64</h3>
+              <ol class="steps">
+                <li>Download <code>Thematic_0.10.6_amd64.deb</code>.</li>
+                <li>Optionally verify it with <code>sha256sum Thematic_0.10.6_amd64.deb</code>.</li>
+                <li>In the download folder, run <code>sudo apt install ./Thematic_0.10.6_amd64.deb</code>, then launch Thematic from the application menu.</li>
+              </ol>
+            </div>
+
+            <div role="tabpanel" id="install-appimage" aria-labelledby="install-appimage-tab" hidden>
+              <h3>AppImage for compatible Linux x64 systems</h3>
+              <ol class="steps">
+                <li>Download <code>Thematic_0.10.6_amd64.AppImage</code>.</li>
+                <li>Optionally verify it with <code>sha256sum Thematic_0.10.6_amd64.AppImage</code>.</li>
+                <li>Make it executable with <code>chmod +x Thematic_0.10.6_amd64.AppImage</code>.</li>
+                <li>Launch it with <code>./Thematic_0.10.6_amd64.AppImage</code>.</li>
+              </ol>
+            </div>
           </div>
 
           <h3>Optional example project</h3>
@@ -546,8 +571,8 @@
             <dt>Recovery</dt><dd>Resume unfinished excerpt drafts and create or restore graph and synthesis checkpoints.</dd>
           </dl>
 
-          <div class="screenshot-tabs" data-screenshot-tabs>
-            <div class="screenshot-tab-list" role="tablist" aria-label="Research Support Center views">
+          <div class="content-tabs" data-tabs>
+            <div class="tab-list" role="tablist" aria-label="Research Support Center views">
               <button type="button" role="tab" aria-selected="true" aria-controls="support-focus" id="support-focus-tab">Focus lane</button>
               <button type="button" role="tab" aria-selected="false" aria-controls="support-attention" id="support-attention-tab" tabindex="-1">Attention</button>
               <button type="button" role="tab" aria-selected="false" aria-controls="support-session" id="support-session-tab" tabindex="-1">Session</button>
@@ -806,7 +831,7 @@
         </section>
 
         <footer class="manual-footer">
-          <p><strong>Thematic User Manual</strong> &middot; Version 0.10.5 &middot; Updated September 2026</p>
+          <p><strong>Thematic User Manual</strong> &middot; Version 0.10.6 &middot; Updated September 2026</p>
           <p>
             Thematic has been built using AI-assisted development practices, sometimes described as "vibe coding." AI tools have contributed to planning,
             implementation, debugging, design iteration, and documentation. The maintainer directs the project and remains responsible for evaluating,

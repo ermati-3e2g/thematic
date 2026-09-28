@@ -509,19 +509,19 @@ input {
   margin: 0;
 }
 
-.screenshot-tabs {
+.content-tabs {
   max-width: 54rem;
   margin: 1.5rem 0 2.5rem;
 }
 
-.screenshot-tab-list {
+.tab-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-bottom: 0.8rem;
 }
 
-.screenshot-tab-list button {
+.tab-list button {
   min-height: 44px;
   padding: 0.55rem 0.8rem;
   border: 1px solid var(--line);
@@ -534,17 +534,17 @@ input {
   cursor: pointer;
 }
 
-.screenshot-tab-list button[aria-selected="true"] {
+.tab-list button[aria-selected="true"] {
   border-color: var(--forest);
   background: var(--forest);
   color: white;
 }
 
-.screenshot-tabs .figure {
+.content-tabs .figure {
   margin: 0;
 }
 
-.screenshot-tabs [hidden] {
+.content-tabs [hidden] {
   display: none;
 }
 

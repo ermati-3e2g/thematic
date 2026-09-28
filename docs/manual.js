@@ -73,7 +73,7 @@ document.querySelectorAll("[data-enlarge]").forEach((button) => {
 });
 
 
-document.querySelectorAll("[data-screenshot-tabs]").forEach((tabs) => {
+document.querySelectorAll("[data-tabs]").forEach((tabs) => {
   const tabButtons = [...tabs.querySelectorAll('[role="tab"]')];
   const panels = [...tabs.querySelectorAll('[role="tabpanel"]')];
 

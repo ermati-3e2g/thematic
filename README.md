@@ -55,13 +55,25 @@ To open it in Thematic:
 
 ## Installation
 
-1. Download the latest Windows installer from [GitHub Releases](https://github.com/ermati-3e2g/thematic/releases/latest).
-2. Run the downloaded `Thematic_*_x64-setup.exe` file and follow the installer prompts.
+Download the package for your operating system from [GitHub Releases](https://github.com/ermati-3e2g/thematic/releases/latest).
+
+| Platform | Package | Installation |
+| --- | --- | --- |
+| Windows x64 | `Thematic_*_x64-setup.exe` | Run the installer and follow the setup prompts. |
+| macOS (Apple silicon) | `Thematic_*_aarch64.dmg` | Open the disk image and drag Thematic to **Applications**. |
+| macOS (Intel) | `Thematic_*_x64.dmg` | Open the disk image and drag Thematic to **Applications**. |
+| Debian or Ubuntu x64 | `Thematic_*_amd64.deb` | Run `sudo apt install ./Thematic_*_amd64.deb` in the download folder. |
+| Other compatible Linux x64 | `Thematic_*_amd64.AppImage` | Make the file executable with `chmod +x Thematic_*_amd64.AppImage`, then launch it. |
+
+Checking the SHA-256 value published in the release notes is optional, but it can confirm that a download is complete and unchanged.
 
 The release also includes the optional `Nature-in-Everyday-Life--What-Helps-Mental-Well-Being-.thematic` example project. After installing Thematic, download this file from the same release and import it through **Manage projects -> Import .thematic project** to explore a populated workspace.
 
 > [!WARNING]
-> The Windows installer is currently **not code-signed**. Windows Defender SmartScreen may therefore show an **Unknown publisher** warning. Only install Thematic when it was downloaded from this repository's official GitHub Releases page, and verify the SHA-256 checksum published with the release before running it.
+> The Windows installer is currently **not code-signed**. Windows Defender SmartScreen may therefore show an **Unknown publisher** warning. Only install Thematic when it was downloaded from this repository's official GitHub Releases page.
+
+> [!NOTE]
+> The macOS packages are ad-hoc signed but not Apple-notarized. macOS may require approval under **System Settings -> Privacy & Security** before opening Thematic.
 
 ## Start a project from scratch
 
