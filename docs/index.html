@@ -436,24 +436,48 @@
           </div>
 
           <h3>1. Write the protocol</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis protocol screenshot">
+              <img src="screenshots/synthesis-protocol.png" loading="lazy" alt="Protocol tab with the research question, scope, inclusion criteria, and exclusion criteria" />
+            </button>
+            <figcaption>Keep the research question and decision rules explicit enough that another reviewer could apply them consistently.</figcaption>
+          </figure>
           <p>
             Start with a focused research question. Use <strong>Scope and context</strong> for population, time frame, setting, or conceptual boundaries.
             Write inclusion and exclusion criteria as decisions another person could apply consistently. These fields support Markdown and KaTeX.
           </p>
 
           <h3>2. Screen sources</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis screening screenshot">
+              <img src="screenshots/synthesis-screening.png" loading="lazy" alt="Screening tab with saved filters, source decisions, priorities, reading progress, exclusion reasons, and notes" />
+            </button>
+            <figcaption>Use collection-wide filters and batch actions while preserving a reasoned decision and note for each source.</figcaption>
+          </figure>
           <p>
             Search or filter the source list, then record a status, priority, exclusion reason when relevant, and a screening note. Select multiple visible
             records to apply batch decisions such as Include, Exclude, To read, or High priority. Use the source-opening action whenever the decision requires full-text review.
           </p>
 
           <h3>3. Define an extraction schema</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis extraction screenshot">
+              <img src="screenshots/synthesis-extraction.png" loading="lazy" alt="Extraction tab with sources, evidence filters, and structured study fields" />
+            </button>
+            <figcaption>Define a stable comparison frame, complete it source by source, and link excerpts that justify each extracted value.</figcaption>
+          </figure>
           <p>
             Add fields that every included source should answer, such as sample size, study design, location, intervention, or core finding. Select a source,
             complete each field, and use its linked excerpts as evidence. A small, stable schema usually produces cleaner comparisons than a large schema that changes mid-review.
           </p>
 
           <h3>4. Build evidence-backed claims</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis claims screenshot">
+              <img src="screenshots/synthesis-claims.png" loading="lazy" alt="Claims tab with status, confidence, linked themes, and supporting or qualifying evidence" />
+            </button>
+            <figcaption>Claims retain their confidence, thematic context, and evidence roles so qualifications remain visible beside supporting material.</figcaption>
+          </figure>
           <p>
             A claim is more than a theme: it is a proposition that can be supported, qualified, or contradicted. Give the claim a status and confidence value,
             attach relevant themes, and link excerpts with an explicit evidence role. Review the detailed excerpt context before deciding what role it plays.
@@ -466,7 +490,26 @@
             Use <strong>Copy Markdown</strong> when you want the outline in another writing tool.
           </p>
 
-          <h3>6. Generate and inspect a report</h3>
+          <h3>6. Check project health</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis project health screenshot">
+              <img src="screenshots/synthesis-health.png" loading="lazy" alt="Health tab summarizing unscreened documents, metadata gaps, unthemed excerpts, unsupported claims, and orphaned records" />
+            </button>
+            <figcaption>Health checks expose incomplete provenance and coverage records before you report or share the synthesis.</figcaption>
+          </figure>
+          <p>
+            Review every nonzero check before treating the synthesis as complete. The Health tab identifies unscreened documents, included sources without excerpts,
+            missing DOI or publication dates, excerpts without themes, claims without evidence, and orphaned excerpts. A zero confirms structural completeness for that
+            check; it does not confirm that the interpretation itself is correct.
+          </p>
+
+          <h3>7. Generate and inspect a report</h3>
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge synthesis report preview screenshot">
+              <img src="screenshots/export-synthesis-draft.png" loading="lazy" alt="Synthesis report preview with review health, protocol, screening summary, and PDF and HTML controls" />
+            </button>
+            <figcaption>The report preview consolidates protocol, screening, extraction, claims, health checks, and draft sections into a readable output.</figcaption>
+          </figure>
           <p>
             Select <strong>Synthesis report</strong> to review a consolidated representation of the protocol, screening, extraction, claims, and draft.
             The report can be saved as HTML. Before sharing, use the Health tab and manually check every substantive claim against its linked evidence.
@@ -503,6 +546,33 @@
             <dt>Recovery</dt><dd>Resume unfinished excerpt drafts and create or restore graph and synthesis checkpoints.</dd>
           </dl>
 
+          <div class="screenshot-grid">
+            <figure class="figure">
+              <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Focus lane screenshot"><img src="screenshots/research-support-center-focus-lane.png" loading="lazy" alt="Focus lane with a reorderable queue of documents, excerpts, claims, and sections" /></button>
+              <figcaption><strong>Focus lane:</strong> add, reorder, complete, or remove the small set of items you intend to handle next.</figcaption>
+            </figure>
+            <figure class="figure">
+              <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Attention screenshot"><img src="screenshots/research-support-center-attention.png" loading="lazy" alt="Attention tab listing citation issues and unfinished excerpt drafts" /></button>
+              <figcaption><strong>Attention:</strong> resolve quality and continuity flags; dismissed items can return if the underlying issue remains.</figcaption>
+            </figure>
+            <figure class="figure">
+              <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Session support screenshot"><img src="screenshots/research-support-center-session.png" loading="lazy" alt="Session tab with progress, break controls, handoff note, and next starting point" /></button>
+              <figcaption><strong>Session:</strong> track an optional target and end with a private handoff note and next starting point.</figcaption>
+            </figure>
+            <figure class="figure">
+              <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge Recovery screenshot"><img src="screenshots/research-support-center-recovery.png" loading="lazy" alt="Recovery tab with unfinished excerpt drafts and checkpoint controls" /></button>
+              <figcaption><strong>Recovery:</strong> resume or remove unfinished drafts and create labeled graph or synthesis checkpoints.</figcaption>
+            </figure>
+          </div>
+
+          <h3>Work deliberately with each support tab</h3>
+          <ul>
+            <li><strong>Focus lane:</strong> choose an item type, select an item, and add it to the queue. Use the arrows to set the working order and the checkboxes to mark progress.</li>
+            <li><strong>Attention:</strong> open or resume the flagged record, correct the underlying condition, and let the item clear automatically. Dismiss only when no action is required.</li>
+            <li><strong>Session:</strong> start an optional session, record breaks when useful, then summarize what changed and what should happen next before ending it.</li>
+            <li><strong>Recovery:</strong> resume unfinished excerpt drafts by update time, or label a checkpoint so its purpose is recognizable later.</li>
+          </ul>
+
           <h3>Resume after reopening</h3>
           <p>
             When resume prompts are enabled in Settings, Thematic can offer to reopen the previous project, workspace, document, excerpt, synthesis tab,
@@ -523,6 +593,21 @@
               <p>Choose an output based on whether the recipient needs the project, the data, or a human-readable synthesis.</p>
             </div>
           </div>
+
+          <figure class="figure">
+            <button class="screenshot-button" data-enlarge type="button" aria-label="Enlarge project export screenshot">
+              <img src="screenshots/export-panel.png" loading="lazy" alt="Export project panel listing Excel, CSV, SQLite, library archive, and portable project formats" />
+            </button>
+            <figcaption>The export panel summarizes the current project and explains what each output preserves.</figcaption>
+          </figure>
+
+          <h3>Export project data</h3>
+          <ol>
+            <li>Open <strong>Export project</strong> and confirm the displayed document, excerpt, and theme counts match the intended project.</li>
+            <li>Select the format that matches the recipient's needs; the export button updates to show the chosen file type.</li>
+            <li>For a library archive, decide whether to include no source files, synthesis-used sources, or every available source.</li>
+            <li>Choose a destination in the system dialog, then open and inspect the result before relying on it.</li>
+          </ol>
 
           <p>
             Select the download button in the header, use the command palette, or press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> to open

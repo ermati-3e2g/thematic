@@ -491,6 +491,19 @@ input {
   font-size: 0.84rem;
 }
 
+.screenshot-grid {
+  display: grid;
+  max-width: 72rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.screenshot-grid .figure {
+  margin: 0;
+}
+
 .image-key,
 .card-grid,
 .workflow-grid {
