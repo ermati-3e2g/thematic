@@ -463,6 +463,7 @@ input {
 }
 
 .figure {
+  max-width: 54rem;
   margin: 2rem 0;
 }
 
@@ -485,7 +486,7 @@ input {
 }
 
 .figure figcaption {
-  max-width: 58rem;
+  max-width: 54rem;
   margin-top: 0.7rem;
   color: var(--muted);
   font-size: 0.84rem;
