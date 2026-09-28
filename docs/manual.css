@@ -522,6 +522,7 @@ input {
 }
 
 .screenshot-tab-list button {
+  min-height: 44px;
   padding: 0.55rem 0.8rem;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -529,6 +530,7 @@ input {
   color: var(--ink);
   font: inherit;
   font-weight: 700;
+  touch-action: manipulation;
   cursor: pointer;
 }
 

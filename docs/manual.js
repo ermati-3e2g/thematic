@@ -88,6 +88,8 @@ document.querySelectorAll("[data-screenshot-tabs]").forEach((tabs) => {
     });
   }
 
+  selectTab(tabButtons.find((button) => button.getAttribute("aria-selected") === "true") || tabButtons[0]);
+
   tabButtons.forEach((button, index) => {
     button.addEventListener("click", () => selectTab(button));
     button.addEventListener("keydown", (event) => {
