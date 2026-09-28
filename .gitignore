@@ -71,3 +71,6 @@ Desktop.ini
 *.bak
 *.swp
 *~
+
+# Installer Builds from Github Actions
+gh-action-builds
